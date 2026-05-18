@@ -15,6 +15,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfiguration {
+
     private final AjaxAwareAuthenticationSuccessHandler successHandler;
     private final AjaxAwareAuthenticationFailureHandler failureHandler;
 
@@ -26,24 +27,35 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/admin/login", "/api/auth/register", "/css/**", "/js/**", "/assets/**", "/error").permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/pos/**").hasAnyRole("ADMIN", "STAFF")
-                        .anyRequest().authenticated()
-                )
-                .formLogin(form -> form
-                        .loginPage("/admin/login")
-                        .loginProcessingUrl("/process-login")
-                        .successHandler(successHandler)
-                        .failureHandler(failureHandler)
-                        .permitAll()
-                )
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/")
-                        .permitAll()
-                );
+            .authorizeHttpRequests(auth -> auth
+                // Tài nguyên công khai
+                .requestMatchers(
+                    "/", "/api/auth/register", "/process-login",
+                    "/css/**", "/js/**", "/assets/**", "/error"
+                ).permitAll()
+
+                // Trang login riêng
+                .requestMatchers("/admin/login", "/staff/login").permitAll()
+
+                // Phân quyền theo role
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers("/pos/**").hasAnyRole("ADMIN", "STAFF")
+
+                // Tất cả request khác cần xác thực
+                .anyRequest().authenticated()
+            )
+            .formLogin(form -> form
+                .loginPage("/admin/login")          // Trang login mặc định khi redirect
+                .loginProcessingUrl("/process-login") // URL Spring Security xử lý xác thực
+                .successHandler(successHandler)
+                .failureHandler(failureHandler)
+                .permitAll()
+            )
+            .logout(logout -> logout
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/?loggedOut=true")
+                .permitAll()
+            );
 
         return http.build();
     }

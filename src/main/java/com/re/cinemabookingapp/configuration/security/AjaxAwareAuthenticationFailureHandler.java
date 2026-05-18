@@ -10,16 +10,28 @@ import java.io.IOException;
 
 @Component
 public class AjaxAwareAuthenticationFailureHandler implements AuthenticationFailureHandler {
+
     @Override
-    public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException {
+    public void onAuthenticationFailure(HttpServletRequest request,
+                                        HttpServletResponse response,
+                                        AuthenticationException exception) throws IOException {
         boolean isAjax = "XMLHttpRequest".equals(request.getHeader("X-Requested-With"));
 
         if (isAjax) {
+            // Customer login qua modal
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json;charset=UTF-8");
             response.getWriter().write("{\"success\": false, \"message\": \"Sai tài khoản hoặc mật khẩu!\"}");
         } else {
-            response.sendRedirect("/admin/login?error=true");
+            // Admin/Staff login qua trang riêng — redirect về trang login tương ứng kèm ?error
+            String referer = request.getHeader("Referer");
+            String redirectUrl = "/admin/login?error=true"; // mặc định
+
+            if (referer != null && referer.contains("/staff/login")) {
+                redirectUrl = "/staff/login?error=true";
+            }
+
+            response.sendRedirect(redirectUrl);
         }
     }
 }

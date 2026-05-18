@@ -2,6 +2,7 @@ package com.re.cinemabookingapp.dto.auth;
 
 import com.re.cinemabookingapp.validator.PasswordsMatch;
 import com.re.cinemabookingapp.validator.StrongPassword;
+import com.re.cinemabookingapp.validator.ValidPhoneNumber;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -27,5 +28,6 @@ public class UserRegistrationDto {
     @Email(message = "Email không hợp lệ")
     private String email;
 
+    @ValidPhoneNumber
     private String phoneNumber;
 }

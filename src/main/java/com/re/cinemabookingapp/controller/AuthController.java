@@ -33,6 +33,11 @@ public class AuthController {
         return "admin/login";
     }
 
+    @GetMapping("/staff/login")
+    public String staffLoginPage(){
+        return "staff/login";
+    }
+
     @PostMapping("/api/auth/register")
     @ResponseBody
     public ResponseEntity<?> registerCustomer(

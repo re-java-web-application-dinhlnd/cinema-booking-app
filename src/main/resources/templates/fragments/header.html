@@ -1,162 +1,274 @@
-<!DOCTYPE html>
-<html lang="vi" xmlns:th="http://www.thymeleaf.org">
-<body>
-<th:block th:fragment="header">
-<header class="header">
-    <div class="header-container">
-        <div class="header-inner">
-            <!-- Logo CineWave -->
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+                xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+  <body>
+    <th:block th:fragment="header">
+      <header class="header">
+        <div class="header-container">
+          <div class="header-inner">
             <div class="logo-wrapper">
-                <a href="/" class="logo-link">
-                    <img th:src="@{/assets/logo.png}" alt="CineWave Logo" class="logo-img" />
-                </a>
+              <a href="/" class="logo-link">
+                <img th:src="@{/assets/logo.png}" alt="CineWave Logo" class="logo-img" />
+              </a>
             </div>
 
-            <!-- Main Navigation  -->
             <div th:replace="~{fragments/navigation :: navigation}"></div>
 
-            <!-- Right Actions (Search, Login, Member) -->
             <div class="header-actions">
-                <!-- Search Icon -->
-                <button class="btn-search">
-                    <i class="fa-solid fa-magnifying-glass"></i>
+              <button class="btn-search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+              </button>
+
+              <div sec:authorize="!isAuthenticated()">
+                <button class="btn-login" onclick="openModal('loginView')">Đăng Nhập</button>
+              </div>
+
+              <div sec:authorize="isAuthenticated()" class="user-menu-wrapper">
+                <button class="user-menu-trigger">
+                  <div class="user-avatar">
+                    <i class="fa-solid fa-user"></i>
+                  </div>
+                  <span class="user-display-name" sec:authentication="principal.user.userProfile.fullName">User</span>
+                  <i class="fa-solid fa-chevron-down user-chevron"></i>
                 </button>
-
-                <!-- Login Button (mở modal) -->
-                <button class="btn-login" id="openAuthModal" onclick="openModal('loginView')">Đăng Nhập</button>
-
-                <!-- VIP Member Banner -->
-                <div class="member-banner">
-                    <div class="member-icon">
-                        <i class="fa-solid fa-crown"></i>
-                    </div>
-                    <div class="member-info">
-                        <span class="member-label">Thành viên</span>
-                        <a href="#" class="member-link" onclick="openModal('registerView')">CINE VIP</a>
-                    </div>
+                <div class="user-dropdown">
+                  <a href="/profile" class="user-dropdown-item">
+                    <i class="fa-regular fa-user"></i>
+                    Thông tin cá nhân
+                  </a>
+                  <div class="user-dropdown-divider"></div>
+                  <button type="button" class="user-dropdown-item logout" onclick="showLogoutConfirm()">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    Đăng xuất
+                  </button>
                 </div>
+              </div>
+
+              <div sec:authorize="!isAuthenticated()" class="member-banner">
+                <div class="member-icon">
+                  <i class="fa-solid fa-crown"></i>
+                </div>
+                <div class="member-info">
+                  <span class="member-label">Thành viên</span>
+                  <a href="#" class="member-link" onclick="openModal('registerView')">CINE VIP</a>
+                </div>
+              </div>
             </div>
+          </div>
         </div>
-    </div>
-</header>
+      </header>
 
-<!-- =========================================================
-     AUTH MODAL (Login + Register)
-     ========================================================= -->
-<div id="authModal" class="modal-overlay" onclick="handleOverlayClick(event)">
-    <div class="modal-box" id="modalBox">
-
-        <!-- CLOSE BUTTON -->
-        <button class="modal-close" onclick="closeModal()">
+      <!-- AUTH MODAL (Login + Register) -->
+      <div
+        id="authModal"
+        class="modal-overlay"
+        onclick="handleOverlayClick(event)"
+      >
+        <div class="modal-box" id="modalBox">
+          <!-- CLOSE BUTTON -->
+          <button class="modal-close" onclick="closeModal()">
             <i class="fa-solid fa-xmark"></i>
-        </button>
+          </button>
 
-        <!-- LOGO -->
-        <div class="modal-logo">
-            <img th:src="@{/assets/logo.png}" alt="CineWave Logo" />
-        </div>
+          <!-- LOGO -->
+          <div class="modal-logo">
+            <img th:src="@{/assets/auth_logo.png}" alt="CineWave Logo" />
+          </div>
 
-        <!-- ==================== LOGIN VIEW ==================== -->
-        <div id="loginView" class="auth-view">
+          <!-- LOGIN VIEW -->
+          <div id="loginView" class="auth-view">
             <h2 class="modal-title">Đăng Nhập Tài Khoản</h2>
 
-            <form id="loginForm" th:action="@{/process-login}" method="post" class="auth-form">
-                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <form
+              id="loginForm"
+              th:action="@{/process-login}"
+              method="post"
+              class="auth-form"
+            >
+              <input
+                type="hidden"
+                th:name="${_csrf.parameterName}"
+                th:value="${_csrf.token}"
+              />
 
-                <div class="form-group">
-                    <label class="form-label">Tên đăng nhập hoặc Email</label>
-                    <input type="text" name="username" class="form-input" placeholder="Nhập tên đăng nhập" required />
+              <div class="form-group">
+                <label class="form-label">Tên đăng nhập hoặc Email</label>
+                <input
+                  type="text"
+                  name="username"
+                  class="form-input"
+                  placeholder="Nhập tên đăng nhập"
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Mật khẩu</label>
+                <div class="input-password-wrapper">
+                  <input
+                    type="password"
+                    name="password"
+                    id="loginPassword"
+                    class="form-input"
+                    placeholder="Nhập mật khẩu"
+                  />
+                  <button
+                    type="button"
+                    class="btn-toggle-password"
+                    onclick="togglePassword('loginPassword', this)"
+                  >
+                    <i class="fa-regular fa-eye-slash"></i>
+                  </button>
                 </div>
+              </div>
 
-                <div class="form-group">
-                    <label class="form-label">Mật khẩu</label>
-                    <div class="input-password-wrapper">
-                        <input type="password" name="password" id="loginPassword" class="form-input" placeholder="Nhập mật khẩu" required />
-                        <button type="button" class="btn-toggle-password" onclick="togglePassword('loginPassword', this)">
-                            <i class="fa-regular fa-eye-slash"></i>
-                        </button>
-                    </div>
-                </div>
+              <button type="submit" class="btn-auth-submit">ĐĂNG NHẬP</button>
 
-                <button type="submit" class="btn-auth-submit">ĐĂNG NHẬP</button>
-
-                <a href="/forgot-password" class="forgot-password-link">Quên mật khẩu?</a>
+              <a href="/forgot-password" class="forgot-password-link"
+                >Quên mật khẩu?</a
+              >
             </form>
 
             <div class="modal-divider"></div>
             <p class="modal-switch-text">
-                Bạn chưa có tài khoản?
-                <button class="btn-switch-view" onclick="switchView('registerView')">Đăng ký</button>
+              Bạn chưa có tài khoản?
+              <button
+                class="btn-switch-view"
+                onclick="switchView('registerView')"
+              >
+                Đăng ký
+              </button>
             </p>
-        </div>
+          </div>
 
-        <!-- ==================== REGISTER VIEW ==================== -->
-        <div id="registerView" class="auth-view" style="display: none;">
+          <!-- REGISTER VIEW -->
+          <div id="registerView" class="auth-view" style="display: none">
             <h2 class="modal-title">Đăng Ký Tài Khoản</h2>
 
-            <form id="registerForm" th:action="@{/api/auth/register}" method="post" class="auth-form">
-                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            <form
+              id="registerForm"
+              th:action="@{/api/auth/register}"
+              method="post"
+              class="auth-form"
+            >
+              <input
+                type="hidden"
+                th:name="${_csrf.parameterName}"
+                th:value="${_csrf.token}"
+              />
 
-                <div class="form-group">
-                    <label class="form-label">Họ và tên <span class="required">*</span></label>
-                    <input type="text" name="fullName" class="form-input" placeholder="Nhập họ và tên" required />
+              <div class="form-group">
+                <label class="form-label"
+                  >Họ và tên <span class="required">*</span></label
+                >
+                <input
+                  type="text"
+                  name="fullName"
+                  class="form-input"
+                  placeholder="Nhập họ và tên"
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label"
+                  >Tên đăng nhập <span class="required">*</span></label
+                >
+                <input
+                  type="text"
+                  name="username"
+                  class="form-input"
+                  placeholder="Nhập tên đăng nhập"
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label"
+                  >Email <span class="required">*</span></label
+                >
+                <input
+                  type="email"
+                  name="email"
+                  class="form-input"
+                  placeholder="Nhập địa chỉ email"
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Số điện thoại</label>
+                <input
+                  type="tel"
+                  name="phoneNumber"
+                  class="form-input"
+                  placeholder="Nhập số điện thoại"
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label"
+                  >Mật khẩu <span class="required">*</span></label
+                >
+                <div class="input-password-wrapper">
+                  <input
+                    type="password"
+                    name="password"
+                    id="regPassword"
+                    class="form-input"
+                    placeholder="Tối thiểu 8 ký tự"
+                  />
+                  <button
+                    type="button"
+                    class="btn-toggle-password"
+                    onclick="togglePassword('regPassword', this)"
+                  >
+                    <i class="fa-regular fa-eye-slash"></i>
+                  </button>
                 </div>
+              </div>
 
-                <div class="form-group">
-                    <label class="form-label">Tên đăng nhập <span class="required">*</span></label>
-                    <input type="text" name="username" class="form-input" placeholder="Nhập tên đăng nhập" required />
+              <div class="form-group">
+                <label class="form-label"
+                  >Nhập lại mật khẩu <span class="required">*</span></label
+                >
+                <div class="input-password-wrapper">
+                  <input
+                    type="password"
+                    name="confirmPassword"
+                    id="regConfirmPassword"
+                    class="form-input"
+                    placeholder="Nhập lại mật khẩu"
+                  />
+                  <button
+                    type="button"
+                    class="btn-toggle-password"
+                    onclick="togglePassword('regConfirmPassword', this)"
+                  >
+                    <i class="fa-regular fa-eye-slash"></i>
+                  </button>
                 </div>
+              </div>
 
-                <div class="form-group">
-                    <label class="form-label">Email <span class="required">*</span></label>
-                    <input type="email" name="email" class="form-input" placeholder="Nhập địa chỉ email" required />
-                </div>
+              <div class="form-checkbox-group">
+                <input type="checkbox" id="agreeTerms" />
+                <label for="agreeTerms">
+                  Tôi đồng ý với
+                  <a href="/terms" target="_blank">Điều khoản dịch vụ</a> và
+                  <a href="/privacy" target="_blank">Chính sách bảo mật</a> của
+                  CineWave.
+                </label>
+              </div>
 
-                <div class="form-group">
-                    <label class="form-label">Số điện thoại</label>
-                    <input type="tel" name="phoneNumber" class="form-input" placeholder="Nhập số điện thoại" />
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Mật khẩu <span class="required">*</span></label>
-                    <div class="input-password-wrapper">
-                        <input type="password" name="password" id="regPassword" class="form-input" placeholder="Tối thiểu 8 ký tự" required />
-                        <button type="button" class="btn-toggle-password" onclick="togglePassword('regPassword', this)">
-                            <i class="fa-regular fa-eye-slash"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Nhập lại mật khẩu <span class="required">*</span></label>
-                    <div class="input-password-wrapper">
-                        <input type="password" name="confirmPassword" id="regConfirmPassword" class="form-input" placeholder="Nhập lại mật khẩu" required />
-                        <button type="button" class="btn-toggle-password" onclick="togglePassword('regConfirmPassword', this)">
-                            <i class="fa-regular fa-eye-slash"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="form-checkbox-group">
-                    <input type="checkbox" id="agreeTerms" required />
-                    <label for="agreeTerms">
-                        Tôi đồng ý với <a href="/terms" target="_blank">Điều khoản dịch vụ</a> và <a href="/privacy" target="_blank">Chính sách bảo mật</a> của CineWave.
-                    </label>
-                </div>
-
-                <button type="submit" class="btn-auth-submit">HOÀN THÀNH</button>
+              <button type="submit" class="btn-auth-submit" id="registerSubmitBtn" disabled>HOÀN THÀNH</button>
             </form>
 
             <div class="modal-divider"></div>
             <p class="modal-switch-text">
-                Bạn đã có tài khoản?
-                <button class="btn-switch-view" onclick="switchView('loginView')">Đăng nhập</button>
+              Bạn đã có tài khoản?
+              <button class="btn-switch-view" onclick="switchView('loginView')">
+                Đăng nhập
+              </button>
             </p>
+          </div>
         </div>
-
-    </div>
-</div>
-</th:block>
-
-</body>
+      </div>
+    </th:block>
+  </body>
 </html>

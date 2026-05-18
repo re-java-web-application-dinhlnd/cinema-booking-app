@@ -1,5 +1,107 @@
 /* modal.css — Auth Modal (Login + Register) */
 
+/* --- LOGOUT CONFIRM DIALOG --- */
+.confirm-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 99998;
+    background-color: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.confirm-overlay.is-open {
+    opacity: 1;
+    visibility: visible;
+}
+
+.confirm-box {
+    background: #FFFFFF;
+    border-radius: 16px;
+    padding: 32px 28px;
+    width: 100%;
+    max-width: 340px;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+    transform: scale(0.95);
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.confirm-overlay.is-open .confirm-box {
+    transform: scale(1);
+}
+
+.confirm-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FEF2F2, #FECACA);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    color: #DC2626;
+    font-size: 20px;
+}
+
+.confirm-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.confirm-desc {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 24px;
+}
+
+.confirm-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.confirm-btn {
+    flex: 1;
+    height: 42px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Inter', sans-serif;
+}
+
+.confirm-btn.cancel {
+    background-color: #F1F5F9;
+    color: var(--text-secondary);
+}
+
+.confirm-btn.cancel:hover {
+    background-color: #E2E8F0;
+    color: var(--text-primary);
+}
+
+.confirm-btn.danger {
+    background: linear-gradient(135deg, #DC2626, #B91C1C);
+    color: #FFFFFF;
+    box-shadow: 0 4px 14px rgba(220, 38, 38, 0.35);
+}
+
+.confirm-btn.danger:hover {
+    box-shadow: 0 6px 20px rgba(220, 38, 38, 0.5);
+    transform: translateY(-1px);
+}
+
 /* --- OVERLAY --- */
 .modal-overlay {
     position: fixed;
@@ -91,14 +193,13 @@
 .modal-logo {
     display: flex;
     justify-content: center;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
 .modal-logo img {
-    height: 60px;
+    height: 100px;
     width: auto;
     object-fit: contain;
-    filter: drop-shadow(0 4px 12px rgba(6, 182, 212, 0.3));
 }
 
 .modal-title {
@@ -298,4 +399,99 @@
 
 .btn-switch-view:hover {
     opacity: 0.75;
+}
+
+/* --- FORM VALIDATION FEEDBACK --- */
+.form-input.is-error {
+    border-color: #EF4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.form-error {
+    font-size: 12px;
+    color: #EF4444;
+    margin-top: 4px;
+    display: block;
+    animation: fadeInUp 0.2s ease;
+}
+
+/* Disabled state khi đang submit */
+.btn-auth-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* --- CUSTOM TOAST NOTIFICATION --- */
+#toastContainer {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.cw-toast {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    border-radius: 12px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #FFFFFF;
+    min-width: 280px;
+    max-width: 360px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+    pointer-events: all;
+    animation: toastSlideIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    cursor: pointer;
+}
+
+.cw-toast.success {
+    background: linear-gradient(135deg, #16A34A, #15803D);
+}
+
+.cw-toast.error {
+    background: linear-gradient(135deg, #DC2626, #B91C1C);
+}
+
+.cw-toast i {
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.cw-toast span {
+    flex: 1;
+    line-height: 1.45;
+}
+
+.cw-toast-close {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.75);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 0;
+    flex-shrink: 0;
+    transition: color 0.15s;
+}
+
+.cw-toast-close:hover {
+    color: #FFFFFF;
+}
+
+@keyframes toastSlideIn {
+    from { opacity: 0; transform: translateX(40px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes toastFadeOut {
+    from { opacity: 1; transform: translateX(0); }
+    to   { opacity: 0; transform: translateX(40px); }
 }

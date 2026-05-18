@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CineWave - Hệ thống đặt vé hiện đại</title>
-    
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- CSS theo chức năng (Modular CSS) -->
     <link rel="stylesheet" th:href="@{/css/base.css}">
     <link rel="stylesheet" th:href="@{/css/layout.css}">
@@ -32,7 +32,31 @@
     <!-- Footer Fragment -->
     <div th:replace="~{fragments/footer :: footer}"></div>
 
-    <!-- Global JS -->
+    <!-- Shared UI: Toast Notifications -->
+    <div id="toastContainer"></div>
+
+    <!-- Shared UI: Logout Confirm Dialog (tái sử dụng cho mọi role) -->
+    <div id="logoutConfirm" class="confirm-overlay">
+        <div class="confirm-box">
+            <div class="confirm-icon">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </div>
+            <h3 class="confirm-title">Đăng xuất?</h3>
+            <p class="confirm-desc">Bạn có chắc muốn đăng xuất khỏi tài khoản không?</p>
+            <div class="confirm-actions">
+                <button class="confirm-btn cancel" onclick="hideLogoutConfirm()">Huỷ</button>
+                <button class="confirm-btn danger" onclick="submitLogout()">Đăng xuất</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden logout form (CSRF required) -->
+    <form id="logoutForm" th:action="@{/logout}" method="post" style="display:none">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+    </form>
+
+    <!-- Scripts: global.js trước, auth-modal.js sau -->
+    <script th:src="@{/js/global.js}"></script>
     <script th:src="@{/js/auth-modal.js}"></script>
 
 </body>
