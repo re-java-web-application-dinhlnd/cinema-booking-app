@@ -1,0 +1,84 @@
+/* base.css — CSS Variables, Reset, Global Styles */
+
+/* --- 1. CSS VARIABLES (Design Tokens) --- */
+:root {
+    /* Backgrounds */
+    --bg-main: #FFFFFF;
+    --bg-card: #F1F5F9;
+
+    /* Accent Colors */
+    --color-primary: #06B6D4;
+    --color-vip: #8B5CF6;
+    --color-seat-std: #475569;
+    --color-sold-out: #E2E8F0;
+
+    /* Typography */
+    --text-primary: #0F172A;
+    --text-secondary: #475569;
+    --text-muted: #94A3B8;
+
+    /* Glow Effects */
+    --glow-primary: 0 8px 25px -4px rgba(6, 182, 212, 0.4);
+    --glow-primary-hover: 0 12px 30px -4px rgba(6, 182, 212, 0.6);
+    --glow-vip: 0 8px 25px -4px rgba(139, 92, 246, 0.4);
+
+    /* Glassmorphism */
+    --glass-bg: rgba(255, 255, 255, 0.75);
+    --glass-border: rgba(6, 182, 212, 0.15);
+}
+
+/* --- 2. GLOBAL RESET --- */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* --- 3. GLOBAL SCROLLBAR (Trang chính) --- */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-main);
+}
+
+::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary);
+}
+
+/* --- 4. UTILITY CLASSES --- */
+.glass-panel {
+    background-color: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+}
+
+.text-gradient {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-vip));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}

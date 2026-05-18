@@ -1,13 +1,79 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <body>
+
+<footer th:fragment="footer" class="footer">
+    <!-- Glow effect behind footer (tùy chỉnh CSS) -->
+    <div class="footer-bg-glow"></div>
+
+    <div class="footer-container">
+        <div class="footer-grid">
+            
+            <!-- LOGO & SOCIAL -->
+            <div class="footer-col-logo">
+                <a href="/" class="footer-logo-link">
+                    <img th:src="@{/assets/logo.png}" alt="CineWave Logo" class="footer-logo-img">
+                </a>
+                <p class="footer-desc">Hệ thống rạp chiếu phim hiện đại mang đến trải nghiệm điện ảnh đỉnh cao với công nghệ hình ảnh và âm thanh sống động.</p>
+                <div class="social-links">
+                    <a href="#" class="social-btn"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" class="social-btn"><i class="fa-brands fa-youtube"></i></a>
+                    <a href="#" class="social-btn"><i class="fa-brands fa-instagram"></i></a>
+                </div>
+            </div>
+
+            <!-- GIỚI THIỆU -->
+            <div class="footer-col-links">
+                <h3 class="footer-title">Hệ Thống Rạp</h3>
+                <ul class="footer-list">
+                    <li><a href="#"><i class="fa-solid fa-chevron-right"></i> Về Chúng Tôi</a></li>
+                    <li><a href="#"><i class="fa-solid fa-chevron-right"></i> Điều Khoản Chung</a></li>
+                    <li><a href="#"><i class="fa-solid fa-chevron-right"></i> Chính Sách Bảo Mật</a></li>
+                    <li><a href="#"><i class="fa-solid fa-chevron-right"></i> Quy Định Bán Vé</a></li>
+                </ul>
+            </div>
+
+            <!-- GÓC ĐIỆN ẢNH -->
+            <div class="footer-col-links">
+                <h3 class="footer-title">Khám Phá</h3>
+                <ul class="footer-list">
+                    <li><a href="#"><i class="fa-solid fa-chevron-right"></i> Phim Đang Chiếu</a></li>
+                    <li><a href="#"><i class="fa-solid fa-chevron-right"></i> Phim Sắp Chiếu</a></li>
+                    <li><a href="#"><i class="fa-solid fa-chevron-right"></i> Rạp CineWave</a></li>
+                    <li><a href="#"><i class="fa-solid fa-chevron-right"></i> Ưu Đãi & Sự Kiện</a></li>
+                </ul>
+            </div>
+
+            <!-- HỖ TRỢ -->
+            <div class="footer-col-contact">
+                <h3 class="footer-title">Chăm Sóc Khách Hàng</h3>
+                <ul class="footer-list">
+                    <li>
+                        <i class="fa-solid fa-location-dot"></i>
+                        <span>Quận 9, TP. Thủ Đức, TP. Hồ Chí Minh</span>
+                    </li>
+                    <li>
+                        <i class="fa-solid fa-phone"></i>
+                        <span>1900 1008</span>
+                    </li>
+                    <li>
+                        <i class="fa-solid fa-envelope"></i>
+                        <span>hotro@cinewave.vn</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- COPYRIGHT -->
+        <div class="footer-bottom">
+            <p>&copy; 2026 CineWave. All rights reserved.</p>
+            <div class="footer-policy-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+            </div>
+        </div>
+    </div>
+</footer>
 
 </body>
 </html>

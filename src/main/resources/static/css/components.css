@@ -1,0 +1,60 @@
+/* components.css — Reusable UI Components (Buttons, Seats, etc.) */
+
+/* --- BUTTON --- */
+.btn-cinema {
+    background-color: var(--color-primary);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: var(--glow-primary);
+    transition: all 0.3s ease;
+}
+
+.btn-cinema:hover {
+    box-shadow: var(--glow-primary-hover);
+    transform: translateY(-2px);
+}
+
+/* --- SEAT MAP --- */
+.seat {
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: bold;
+    margin: 5px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.seat.standard {
+    background-color: var(--color-seat-std);
+    color: #FFFFFF;
+}
+
+.seat.vip {
+    background-color: var(--color-vip);
+    color: #FFFFFF;
+    box-shadow: var(--glow-vip);
+}
+
+.seat.selected {
+    background-color: var(--color-primary);
+    color: #FFFFFF;
+    box-shadow: var(--glow-primary);
+    transform: scale(1.05);
+}
+
+.seat.sold-out {
+    background-color: var(--color-sold-out);
+    color: var(--text-muted);
+    cursor: not-allowed;
+    text-decoration: line-through;
+    opacity: 0.5;
+}

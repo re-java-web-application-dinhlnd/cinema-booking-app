@@ -1,13 +1,40 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <body>
+
+<nav th:fragment="navigation" class="main-nav">
+    
+    <!-- Buy Ticket Button -->
+    <a href="/booking" class="btn-buy-ticket">
+        <i class="fa-solid fa-ticket"></i>
+        <span>MUA VÉ NAY</span>
+    </a>
+
+    <!-- Nav Links -->
+    <div class="nav-item">
+        <a href="/movies" class="nav-link">
+            Phim <i class="fa-solid fa-chevron-down"></i>
+        </a>
+    </div>
+
+    <div class="nav-item">
+        <a href="/star-shop" class="nav-link">
+            Góc Điện Ảnh <i class="fa-solid fa-chevron-down"></i>
+        </a>
+    </div>
+
+    <div class="nav-item">
+        <a href="/events" class="nav-link">
+            Sự Kiện <i class="fa-solid fa-chevron-down"></i>
+        </a>
+    </div>
+
+    <div class="nav-item">
+        <a href="/cinemas" class="nav-link">
+            Rạp / Giá Vé <i class="fa-solid fa-chevron-down"></i>
+        </a>
+    </div>
+</nav>
 
 </body>
 </html>
