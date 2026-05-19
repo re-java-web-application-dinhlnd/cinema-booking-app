@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/admin-layout :: layout('Tìm phim từ TMDB', ~{::pageContent})}">
+<body>
+<th:block th:fragment="pageContent">
+    <link rel="stylesheet" th:href="@{/css/admin/movies.css}"/>
+
+    <div class="page-header">
+        <h1><i class="fa-solid fa-magnifying-glass"></i> Tìm phim từ TMDB</h1>
+        <a th:href="@{/admin/movies}" class="btn-back">
+            <i class="fa-solid fa-arrow-left"></i> Quay lại
+        </a>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="tmdb-search-bar">
+        <input type="text" id="tmdbSearchInput"
+               placeholder="Tìm kiếm phim theo tên... (VD: Avengers, Lật Mặt...)"/>
+    </div>
+
+    <!-- Category Tabs -->
+    <div class="tmdb-tabs" id="tmdbTabs">
+        <button class="tmdb-tab active" data-category="now_playing">
+            <i class="fa-solid fa-clapperboard"></i> Đang chiếu
+        </button>
+        <button class="tmdb-tab" data-category="upcoming">
+            <i class="fa-solid fa-clock"></i> Sắp chiếu
+        </button>
+        <button class="tmdb-tab" data-category="popular">
+            <i class="fa-solid fa-fire"></i> Phổ biến
+        </button>
+    </div>
+
+    <!-- Loading -->
+    <div id="tmdbLoading" class="tmdb-loading hidden">
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        <p>Đang tải...</p>
+    </div>
+
+    <!-- Results Grid -->
+    <div id="tmdbResults" class="tmdb-grid"></div>
+
+    <!-- Load More Spinner -->
+    <div id="tmdbLoadMore" class="tmdb-load-more hidden">
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        <span>Đang tải thêm...</span>
+    </div>
+
+    <!-- End of results -->
+    <div id="tmdbEndMsg" class="tmdb-end-msg hidden">
+        <span>Đã hiển thị hết kết quả</span>
+    </div>
+
+    <!-- Scroll sentinel -->
+    <div id="tmdbSentinel" class="tmdb-sentinel"></div>
+
+    <!-- Empty -->
+    <div id="tmdbEmpty" class="tmdb-empty hidden">
+        <i class="fa-solid fa-ghost tmdb-empty-icon"></i>
+        <p>Không tìm thấy phim nào phù hợp.</p>
+    </div>
+
+    <!-- ========== DETAIL MODAL ========== -->
+    <div id="tmdbDetailModal" class="tmdb-modal-overlay hidden">
+        <div class="tmdb-modal">
+            <button class="tmdb-modal-close" id="detailModalCloseBtn">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div id="modalBackdrop" class="tmdb-modal-backdrop"></div>
+            <div class="tmdb-modal-content">
+                <div class="tmdb-modal-poster">
+                    <img id="modalPoster" src="" alt=""/>
+                    <button id="modalPosterPlayBtn" class="tmdb-poster-play-overlay hidden" title="Xem Trailer">
+                        <i class="fa-solid fa-play"></i>
+                    </button>
+                </div>
+                <div class="tmdb-modal-info">
+                    <h2 id="modalTitle"></h2>
+                    <p id="modalTagline" class="tmdb-modal-tagline"></p>
+                    <div class="tmdb-modal-meta">
+                        <span id="modalRelease"><i class="fa-regular fa-calendar"></i></span>
+                        <span id="modalRuntime"><i class="fa-solid fa-clock"></i></span>
+                        <span id="modalRating" class="tmdb-rating"><i class="fa-solid fa-star"></i></span>
+                    </div>
+                    <div id="modalGenres" class="tmdb-modal-genres"></div>
+                    <p id="modalOverview" class="tmdb-modal-overview"></p>
+
+                    <div class="tmdb-modal-actions">
+                        <button id="modalImportBtn" class="btn-import">
+                            <i class="fa-solid fa-plus"></i> Thêm vào rạp
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== TRAILER MODAL (lightweight) ========== -->
+    <div id="trailerModal" class="trailer-modal-overlay hidden">
+        <div class="trailer-modal">
+            <button class="tmdb-modal-close" id="trailerModalCloseBtn">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div id="trailerModalPlayer" class="trailer-modal-player"></div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/admin/tmdb-search.js}"></script>
+</th:block>
+</body>
+</html>

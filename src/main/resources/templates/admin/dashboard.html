@@ -1,10 +1,67 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/admin-layout :: layout('Dashboard', ~{::pageContent})}">
 <body>
+<th:block th:fragment="pageContent">
+    <link rel="stylesheet" th:href="@{/css/admin/dashboard.css}"/>
 
+    <div class="dashboard-header">
+        <h1><i class="fa-solid fa-chart-pie"></i> Dashboard</h1>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-card-inner">
+                <div class="stat-icon cyan">
+                    <i class="fa-solid fa-film"></i>
+                </div>
+                <div>
+                    <p class="stat-label">Tổng phim</p>
+                    <h3 class="stat-value">—</h3>
+                </div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-inner">
+                <div class="stat-icon purple">
+                    <i class="fa-solid fa-ticket"></i>
+                </div>
+                <div>
+                    <p class="stat-label">Vé đã bán</p>
+                    <h3 class="stat-value">—</h3>
+                </div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-inner">
+                <div class="stat-icon green">
+                    <i class="fa-solid fa-money-bill-trend-up"></i>
+                </div>
+                <div>
+                    <p class="stat-label">Doanh thu</p>
+                    <h3 class="stat-value">—</h3>
+                </div>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-card-inner">
+                <div class="stat-icon yellow">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+                <div>
+                    <p class="stat-label">Khách hàng</p>
+                    <h3 class="stat-value">—</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-placeholder">
+        <i class="fa-solid fa-chart-line"></i>
+        <p>Biểu đồ thống kê sẽ được cập nhật ở Phase 9</p>
+    </div>
+
+</th:block>
 </body>
 </html>
