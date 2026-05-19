@@ -6,7 +6,6 @@ import com.re.cinemabookingapp.entity.UserProfile;
 import com.re.cinemabookingapp.service.ProfileService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -49,12 +48,13 @@ public class CustomerProfileController {
     @PostMapping("/update")
     public String updateProfileInfo(@Valid @ModelAttribute("profileDto") UserProfileUpdateDto dto,
                                     BindingResult result,
+                                    Model model,
                                     RedirectAttributes redirectAttributes) {
-        
+
         if (result.hasErrors()) {
-            redirectAttributes.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX + "profileDto", result);
-            redirectAttributes.addFlashAttribute("profileDto", dto);
-            return "redirect:/profile";
+            // Render trực tiếp — giữ nguyên dữ liệu form, không redirect
+            model.addAttribute("passwordDto", new ChangePasswordDto());
+            return "customer/profile";
         }
 
         try {
@@ -64,20 +64,25 @@ public class CustomerProfileController {
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra: " + e.getMessage());
         }
-        
+
         return "redirect:/profile";
     }
 
     @PostMapping("/change-password")
     public String changePassword(@Valid @ModelAttribute("passwordDto") ChangePasswordDto dto,
                                  BindingResult result,
+                                 Model model,
                                  RedirectAttributes redirectAttributes) {
-                                     
+
         if (result.hasErrors()) {
-            redirectAttributes.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX + "passwordDto", result);
-            redirectAttributes.addFlashAttribute("passwordDto", dto);
-            redirectAttributes.addFlashAttribute("activeTab", "password"); // Để JS tự động bật tab Mật khẩu
-            return "redirect:/profile";
+            // Render trực tiếp — giữ nguyên dữ liệu form, tự động bật tab Mật khẩu
+            String username = SecurityContextHolder.getContext().getAuthentication().getName();
+            UserProfile profile = profileService.getUserProfileByUsername(username);
+            model.addAttribute("profileDto", new UserProfileUpdateDto(
+                    profile.getFullName(), profile.getPhoneNumber(), profile.getEmail()
+            ));
+            model.addAttribute("activeTab", "password");
+            return "customer/profile";
         }
 
         try {
@@ -85,10 +90,18 @@ public class CustomerProfileController {
             profileService.changeUserPassword(username, dto);
             redirectAttributes.addFlashAttribute("successMessage", "Đổi mật khẩu thành công!");
         } catch (IllegalArgumentException e) {
-            result.rejectValue(e.getMessage().contains("Mật khẩu cũ") ? "oldPassword" : "confirmPassword", "error.passwordDto", e.getMessage());
-            redirectAttributes.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX + "passwordDto", result);
-            redirectAttributes.addFlashAttribute("passwordDto", dto);
-            redirectAttributes.addFlashAttribute("activeTab", "password");
+            // Lỗi business logic (pass cũ sai, confirm không khớp) — render trực tiếp
+            result.rejectValue(
+                    e.getMessage().contains("Mật khẩu cũ") ? "oldPassword" : "confirmPassword",
+                    "error.passwordDto", e.getMessage()
+            );
+            String username = SecurityContextHolder.getContext().getAuthentication().getName();
+            UserProfile profile = profileService.getUserProfileByUsername(username);
+            model.addAttribute("profileDto", new UserProfileUpdateDto(
+                    profile.getFullName(), profile.getPhoneNumber(), profile.getEmail()
+            ));
+            model.addAttribute("activeTab", "password");
+            return "customer/profile";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Có lỗi xảy ra: " + e.getMessage());
         }

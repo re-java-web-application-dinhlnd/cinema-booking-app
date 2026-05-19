@@ -7,6 +7,8 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @Component
 public class AjaxAwareAuthenticationFailureHandler implements AuthenticationFailureHandler {
@@ -23,15 +25,17 @@ public class AjaxAwareAuthenticationFailureHandler implements AuthenticationFail
             response.setContentType("application/json;charset=UTF-8");
             response.getWriter().write("{\"success\": false, \"message\": \"Sai tài khoản hoặc mật khẩu!\"}");
         } else {
-            // Admin/Staff login qua trang riêng — redirect về trang login tương ứng kèm ?error
+            // Admin/Staff login qua trang riêng — giữ lại username đã nhập
             String referer = request.getHeader("Referer");
-            String redirectUrl = "/admin/login?error=true"; // mặc định
+            String username = request.getParameter("username");
+            String encodedUsername = URLEncoder.encode(username != null ? username : "", StandardCharsets.UTF_8);
 
+            String basePath = "/admin/login";
             if (referer != null && referer.contains("/staff/login")) {
-                redirectUrl = "/staff/login?error=true";
+                basePath = "/staff/login";
             }
 
-            response.sendRedirect(redirectUrl);
+            response.sendRedirect(basePath + "?error=true&username=" + encodedUsername);
         }
     }
 }

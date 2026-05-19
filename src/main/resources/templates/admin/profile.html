@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>CineWave - Hồ sơ Quản trị viên</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+    <!-- Styles -->
+    <link rel="stylesheet" th:href="@{/css/base.css}"/>
+    <link rel="stylesheet" th:href="@{/css/modal.css}"/>
+    <link rel="stylesheet" th:href="@{/css/admin/profile.css}"/>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="admin-topbar">
+    <div class="topbar-left">
+        <a href="/admin/dashboard" class="topbar-brand">
+            <img th:src="@{/assets/auth_logo.png}" alt="CineWave"/>
+            <span>CineWave <strong>Admin</strong></span>
+        </a>
+    </div>
+    <div class="topbar-right">
+        <a href="/admin/dashboard" class="topbar-link">
+            <i class="fa-solid fa-gauge-high"></i> Dashboard
+        </a>
+        <a href="/admin/profile" class="topbar-link active">
+            <i class="fa-solid fa-user-gear"></i> Hồ sơ
+        </a>
+        <button type="button" class="topbar-link logout-btn" onclick="showLogoutConfirm()">
+            <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+        </button>
+    </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="admin-profile-wrapper">
+
+    <!-- Profile Header -->
+    <div class="profile-banner admin-banner">
+        <div class="profile-banner-content">
+            <div class="profile-avatar admin-avatar">
+                <i class="fa-solid fa-user-shield"></i>
+            </div>
+            <div class="profile-title">
+                <span class="role-badge admin-badge">ADMIN</span>
+                <h1 th:text="${profileDto.fullName}">Quản Trị Viên</h1>
+                <p th:text="${profileDto.email}">admin@cinewave.vn</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Body -->
+    <div class="profile-body">
+        <div class="profile-sidebar">
+            <ul class="profile-nav">
+                <li>
+                    <button class="nav-btn" th:classappend="${activeTab != 'password' ? 'active' : ''}" onclick="switchTab('info')">
+                        <i class="fa-solid fa-address-card"></i> Thông tin chung
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-btn" th:classappend="${activeTab == 'password' ? 'active' : ''}" onclick="switchTab('password')">
+                        <i class="fa-solid fa-key"></i> Đổi mật khẩu
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-btn" onclick="showLogoutConfirm()">
+                        <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+                    </button>
+                </li>
+            </ul>
+        </div>
+
+        <div class="profile-content">
+            <!-- Toast JS trigger -->
+            <div th:if="${errorMessage}" class="alert alert-error" th:text="${errorMessage}"></div>
+            <script th:if="${successMessage}">
+                document.addEventListener("DOMContentLoaded", function() {
+                    if(typeof showToast === 'function') {
+                        showToast('[[${successMessage}]]', true);
+                    }
+                });
+            </script>
+
+            <!-- TAB 1: INFO -->
+            <div id="tab-info" class="tab-pane" th:style="${activeTab == 'password' ? 'display:none;' : 'display:block;'}">
+                <h2 class="tab-title">Thông tin cá nhân</h2>
+                <form id="updateProfileForm" th:action="@{/admin/profile/update}" method="post" th:object="${profileDto}" class="profile-form">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                    <div class="form-group">
+                        <label class="form-label">Tên đăng nhập</label>
+                        <input type="text" class="form-input disabled" th:value="${username}" readonly />
+                        <span class="field-desc">Tên đăng nhập không thể thay đổi.</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-input disabled" th:field="*{email}" readonly />
+                        <span class="field-desc">Email không thể thay đổi để đảm bảo bảo mật.</span>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Họ và tên</label>
+                            <input type="text" class="form-input" th:field="*{fullName}" placeholder="Nhập họ và tên" />
+                            <span class="field-error" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}">Lỗi tên</span>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Số điện thoại</label>
+                            <input type="text" class="form-input" th:field="*{phoneNumber}" placeholder="Nhập số điện thoại" />
+                            <span class="field-error" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}">Lỗi sđt</span>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn-submit-profile admin-btn" onclick="showUpdateConfirm()">Cập nhật thông tin</button>
+                </form>
+            </div>
+
+            <!-- TAB 2: PASSWORD -->
+            <div id="tab-password" class="tab-pane" th:style="${activeTab == 'password' ? 'display:block;' : 'display:none;'}">
+                <h2 class="tab-title">Đổi mật khẩu</h2>
+                <form id="changePasswordForm" th:action="@{/admin/profile/change-password}" method="post" th:object="${passwordDto}" class="profile-form">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                    <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-error">
+                        <p th:each="err : ${#fields.globalErrors()}" th:text="${err}"></p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Mật khẩu hiện tại</label>
+                        <input type="password" class="form-input" th:field="*{oldPassword}" placeholder="Nhập mật khẩu hiện tại" />
+                        <span class="field-error" th:if="${#fields.hasErrors('oldPassword')}" th:errors="*{oldPassword}">Lỗi pass cũ</span>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Mật khẩu mới</label>
+                            <input type="password" class="form-input" th:field="*{newPassword}" placeholder="Nhập mật khẩu mới" />
+                            <span class="field-error" th:if="${#fields.hasErrors('newPassword')}" th:errors="*{newPassword}">Lỗi pass mới</span>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Xác nhận mật khẩu mới</label>
+                            <input type="password" class="form-input" th:field="*{confirmPassword}" placeholder="Nhập lại mật khẩu mới" />
+                            <span class="field-error" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}">Lỗi xác nhận</span>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn-submit-profile admin-btn" onclick="showPasswordConfirm()">Đổi mật khẩu</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Xác Nhận Cập Nhật Thông Tin -->
+<div id="updateConfirm" class="confirm-overlay">
+    <div class="confirm-box">
+        <div class="confirm-icon" style="background: #DBEAFE; color: #1D4ED8;">
+            <i class="fa-solid fa-pen-to-square"></i>
+        </div>
+        <h3 class="confirm-title">Lưu thay đổi?</h3>
+        <p class="confirm-desc">Bạn có chắc chắn muốn cập nhật thông tin cá nhân này không?</p>
+        <div class="confirm-actions">
+            <button class="confirm-btn cancel" onclick="hideUpdateConfirm()">Huỷ</button>
+            <button class="confirm-btn danger" style="background: #1D4ED8;" onclick="submitUpdateForm()">Cập nhật</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Xác Nhận Đổi Mật Khẩu -->
+<div id="passwordConfirm" class="confirm-overlay">
+    <div class="confirm-box">
+        <div class="confirm-icon" style="background: #FEF3C7; color: #D97706;">
+            <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <h3 class="confirm-title">Đổi mật khẩu?</h3>
+        <p class="confirm-desc">Bạn sẽ bị yêu cầu đăng nhập lại ở các thiết bị khác nếu đổi mật khẩu.</p>
+        <div class="confirm-actions">
+            <button class="confirm-btn cancel" onclick="hidePasswordConfirm()">Huỷ</button>
+            <button class="confirm-btn danger" style="background: #D97706;" onclick="submitPasswordForm()">Xác nhận</button>
+        </div>
+    </div>
+</div>
+
+<!-- Logout Confirm -->
+<div id="logoutConfirm" class="confirm-overlay">
+    <div class="confirm-box">
+        <div class="confirm-icon">
+            <i class="fa-solid fa-right-from-bracket"></i>
+        </div>
+        <h3 class="confirm-title">Đăng xuất?</h3>
+        <p class="confirm-desc">Bạn có chắc muốn đăng xuất khỏi tài khoản không?</p>
+        <div class="confirm-actions">
+            <button class="confirm-btn cancel" onclick="hideLogoutConfirm()">Huỷ</button>
+            <button class="confirm-btn danger" onclick="submitLogout()">Đăng xuất</button>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden logout form -->
+<form id="logoutForm" th:action="@{/logout}" method="post" style="display:none">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+</form>
+
+<!-- Toast Container -->
+<div id="toastContainer"></div>
+
+<script th:src="@{/js/global.js}"></script>
+<script th:src="@{/js/profile.js}"></script>
+</body>
+</html>

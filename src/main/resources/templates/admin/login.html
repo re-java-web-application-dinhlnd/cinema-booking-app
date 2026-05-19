@@ -50,6 +50,7 @@
                             name="username"
                             class="form-input"
                             placeholder="Nhập tên đăng nhập"
+                            th:value="${param.username != null ? param.username[0] : ''}"
                             required
                             autofocus
                     />
@@ -75,6 +76,7 @@
                     >
                         <i class="fa-regular fa-eye-slash"></i>
                     </button>
+                </div>
             </div>
 
             <!-- Remember Me Checkbox -->

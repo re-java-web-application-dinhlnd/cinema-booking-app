@@ -20,6 +20,7 @@ public class SecurityConfiguration {
     private final AjaxAwareAuthenticationSuccessHandler successHandler;
     private final AjaxAwareAuthenticationFailureHandler failureHandler;
     private final JpaPersistentTokenRepository persistentTokenRepository;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
 
     @Value("${cinewave.security.remember-me.key}")
     private String rememberMeKey;
@@ -36,7 +37,7 @@ public class SecurityConfiguration {
                 // Tài nguyên công khai
                 .requestMatchers(
                     "/", "/api/auth/register", "/process-login",
-                    "/css/**", "/js/**", "/assets/**", "/error"
+                    "/css/**", "/js/**", "/assets/**", "/error", "/error/**"
                 ).permitAll()
 
                 // Trang login riêng
@@ -66,6 +67,9 @@ public class SecurityConfiguration {
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/?loggedOut=true")
                 .permitAll()
+            )
+            .exceptionHandling(ex -> ex
+                .accessDeniedHandler(accessDeniedHandler)
             );
 
         return http.build();

@@ -37,7 +37,7 @@
                 <p>Vui lòng đăng nhập để bắt đầu ca làm việc</p>
             </div>
 
-            <form th:action="@{/staff-process-login}" method="post">
+            <form th:action="@{/process-login}" method="post">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
 
                 <div class="form-group">
@@ -48,6 +48,7 @@
                                 type="text"
                                 name="username"
                                 class="form-input"
+                                th:value="${param.username != null ? param.username[0] : ''}"
                                 required
                                 autofocus
                         />
