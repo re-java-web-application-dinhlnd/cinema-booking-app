@@ -1,10 +1,106 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CineWave - Đăng nhập Quản trị viên</title>
 
-</body>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <!-- Styles -->
+    <link rel="stylesheet" th:href="@{/css/base.css}" />
+    <link rel="stylesheet" th:href="@{/css/modal.css}" />
+    <link rel="stylesheet" th:href="@{/css/admin/main.css}" />
+  </head>
+  <body>
+    <div class="admin-login-container">
+      <div class="login-card">
+        <div class="logo-container">
+          <img th:src="@{/assets/auth_logo.png}" alt="CineWave Admin" />
+          <h1>Quản Trị Viên</h1>
+          <p>Đăng nhập để vào hệ thống quản lý</p>
+        </div>
+
+        <!-- Form submission chuẩn POST theo Spring Security -->
+        <form th:action="@{/process-login}" method="post">
+          <input
+            type="hidden"
+            th:name="${_csrf.parameterName}"
+            th:value="${_csrf.token}"
+          />
+
+          <div class="form-group">
+            <label class="form-label">Tên đăng nhập</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-user prefix-icon"></i>
+              <input
+                type="text"
+                name="username"
+                class="form-input"
+                placeholder="Nhập tên đăng nhập"
+                required
+                autofocus
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Mật khẩu</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-lock prefix-icon"></i>
+              <input
+                type="password"
+                name="password"
+                id="adminPassword"
+                class="form-input"
+                placeholder="Nhập mật khẩu"
+                required
+              />
+              <button
+                type="button"
+                class="btn-toggle-password"
+                onclick="toggleAdminPassword()"
+              >
+                <i class="fa-regular fa-eye-slash"></i>
+              </button>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-submit">ĐĂNG NHẬP</button>
+        </form>
+      </div>
+
+      <a href="/" class="back-link">
+        <i class="fa-solid fa-arrow-left"></i> Quay lại trang chủ
+      </a>
+    </div>
+
+    <!-- TOAST CONTAINER -->
+    <div id="toastContainer"></div>
+
+    <script th:src="@{/js/global.js}"></script>
+    <script>
+      function toggleAdminPassword() {
+        const input = document.getElementById("adminPassword");
+        const icon = document.querySelector(".btn-toggle-password i");
+        const isHidden = input.type === "password";
+        input.type = isHidden ? "text" : "password";
+        icon.className = isHidden
+          ? "fa-regular fa-eye"
+          : "fa-regular fa-eye-slash";
+      }
+    </script>
+  </body>
 </html>

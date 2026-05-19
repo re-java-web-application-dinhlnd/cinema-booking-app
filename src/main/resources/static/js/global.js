@@ -56,6 +56,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (params.get('loggedOut') === 'true') {
         showToast('Bạn đã đăng xuất thành công.', true);
         history.replaceState(null, '', window.location.pathname);
+    } else if (params.get('error') === 'true') {
+        showToast('Tên đăng nhập hoặc mật khẩu không đúng.', false);
+        history.replaceState(null, '', window.location.pathname);
     }
 
     document.addEventListener('keydown', (e) => {
