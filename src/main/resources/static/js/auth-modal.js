@@ -60,6 +60,8 @@ function handleLoginSubmit(event) {
     const username = form.querySelector('[name="username"]').value.trim();
     const password = form.querySelector('[name="password"]').value;
     const csrfToken = form.querySelector('input[name="_csrf"]').value;
+    const rememberMeCheckbox = form.querySelector('input[name="remember-me"]');
+    const rememberMe = rememberMeCheckbox ? rememberMeCheckbox.checked : false;
 
     if (!username || !password) {
         showToast('Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu.', false);
@@ -69,7 +71,15 @@ function handleLoginSubmit(event) {
     submitBtn.disabled = true;
     submitBtn.textContent = 'ĐANG XỬ LÝ...';
 
-    const formData = new URLSearchParams({ username, password, _csrf: csrfToken });
+    const formData = new URLSearchParams({ 
+        username, 
+        password, 
+        _csrf: csrfToken 
+    });
+    
+    if (rememberMe) {
+        formData.append('remember-me', 'on');
+    }
 
     fetch('/process-login', {
         method: 'POST',

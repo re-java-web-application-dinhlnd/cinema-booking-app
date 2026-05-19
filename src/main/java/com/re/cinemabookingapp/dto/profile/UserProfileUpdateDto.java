@@ -18,7 +18,6 @@ public class UserProfileUpdateDto {
     
     @ValidPhoneNumber
     private String phoneNumber;
-    
-    // Email thường không cho phép đổi tùy tiện, nếu cần có thể thêm vào đây
+
     private String email;
 }

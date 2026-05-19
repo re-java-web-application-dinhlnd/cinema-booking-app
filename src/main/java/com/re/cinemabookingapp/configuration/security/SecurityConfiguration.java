@@ -1,6 +1,7 @@
 package com.re.cinemabookingapp.configuration.security;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -18,6 +19,10 @@ public class SecurityConfiguration {
 
     private final AjaxAwareAuthenticationSuccessHandler successHandler;
     private final AjaxAwareAuthenticationFailureHandler failureHandler;
+    private final JpaPersistentTokenRepository persistentTokenRepository;
+
+    @Value("${cinewave.security.remember-me.key}")
+    private String rememberMeKey;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -50,6 +55,12 @@ public class SecurityConfiguration {
                 .successHandler(successHandler)
                 .failureHandler(failureHandler)
                 .permitAll()
+            )
+            .rememberMe(remember -> remember
+                .key(rememberMeKey)
+                .tokenRepository(persistentTokenRepository) // Dùng JpaPersistentTokenRepository lưu DB
+                .tokenValiditySeconds(14 * 24 * 60 * 60) // Thời gian sống: 14 ngày
+                .rememberMeParameter("remember-me") // Tên biến từ giao diện gửi lên
             )
             .logout(logout -> logout
                 .logoutUrl("/logout")
