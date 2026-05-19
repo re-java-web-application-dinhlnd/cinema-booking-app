@@ -92,3 +92,29 @@ INSERT IGNORE INTO products (name, description, price, type, status) VALUES
 ('Combo Solo', '1 Bắp nhỏ + 1 Coca-Cola', 55000, 'COMBO', 'ACTIVE'),
 ('Combo Đôi', '1 Bắp lớn + 2 Coca-Cola', 89000, 'COMBO', 'ACTIVE'),
 ('Combo Gia Đình', '2 Bắp lớn + 4 Coca-Cola', 159000, 'COMBO', 'ACTIVE');
+
+-- 6. MOVIES (Phim - Dữ liệu mẫu từ TMDB)
+INSERT IGNORE INTO movies (tmdb_id, title, description, duration_minutes, release_date, poster_url, trailer_url, vote_average, status, created_at, updated_at) VALUES
+(299534, 'Avengers: Endgame', 'Sau những sự kiện tàn khốc trong Avengers: Infinity War, vũ trụ đã chìm trong đống đổ nát. Với sự giúp đỡ của các đồng minh còn lại, Avengers tập hợp lại một lần nữa để đảo ngược hành động của Thanos và khôi phục lại trật tự cho vũ trụ.', 181, '2019-04-24', 'https://image.tmdb.org/t/p/w500/or06FN3Dka5tukK1e9sl16pB3iy.jpg', 'https://www.youtube.com/watch?v=TcMBFSGVi1c', 8.3, 'ACTIVE', NOW(), NOW()),
+(27205, 'Inception', 'Một tên trộm lành nghề, chuyên trộm cắp bí mật của doanh nghiệp thông qua việc sử dụng công nghệ chia sẻ giấc mơ, được giao nhiệm vụ ngược lại là gieo rắc một ý tưởng vào tâm trí của một C.E.O.', 148, '2010-07-15', 'https://image.tmdb.org/t/p/w500/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg', 'https://www.youtube.com/watch?v=YoHD9XEInc0', 8.4, 'ACTIVE', NOW(), NOW()),
+(76600, 'Avatar: The Way of Water', 'Lấy bối cảnh hơn một thập kỷ sau các sự kiện của bộ phim đầu tiên, hãy tìm hiểu câu chuyện về gia đình Sully (Jake, Neytiri và các con của họ), những rắc rối theo sau họ, và những gì họ phải làm để giữ an toàn cho nhau.', 192, '2022-12-14', 'https://image.tmdb.org/t/p/w500/8Y7Wr8slNUkI8Knv6XzIuYcEaC6.jpg', 'https://www.youtube.com/watch?v=d9MyW72ELq0', 7.6, 'ACTIVE', NOW(), NOW()),
+(155, 'The Dark Knight', 'Batman nâng cao mức độ chống tội phạm của mình. Với sự giúp đỡ của Trung úy Jim Gordon và Luật sư Quận Harvey Dent, Batman bắt đầu phá hủy các tổ chức tội phạm còn lại đe dọa thành phố.', 152, '2008-07-16', 'https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg', 'https://www.youtube.com/watch?v=EXeTwQWrcwY', 8.5, 'COMING_SOON', NOW(), NOW());
+
+-- 7. MOVIE_GENRES (Mapping phim và thể loại)
+-- Thể loại trong DB: 28(Hành Động), 12(Phiêu Lưu), 878(Khoa Học Viễn Tưởng), 18(Chính Kịch), 10751(Gia Đình)
+INSERT IGNORE INTO movie_genres (movie_id, genre_id) VALUES
+((SELECT id FROM movies WHERE tmdb_id = 299534), (SELECT id FROM genres WHERE tmdb_id = 28)),
+((SELECT id FROM movies WHERE tmdb_id = 299534), (SELECT id FROM genres WHERE tmdb_id = 12)),
+((SELECT id FROM movies WHERE tmdb_id = 299534), (SELECT id FROM genres WHERE tmdb_id = 878)),
+
+((SELECT id FROM movies WHERE tmdb_id = 27205), (SELECT id FROM genres WHERE tmdb_id = 28)),
+((SELECT id FROM movies WHERE tmdb_id = 27205), (SELECT id FROM genres WHERE tmdb_id = 878)),
+((SELECT id FROM movies WHERE tmdb_id = 27205), (SELECT id FROM genres WHERE tmdb_id = 12)),
+
+((SELECT id FROM movies WHERE tmdb_id = 76600), (SELECT id FROM genres WHERE tmdb_id = 878)),
+((SELECT id FROM movies WHERE tmdb_id = 76600), (SELECT id FROM genres WHERE tmdb_id = 28)),
+((SELECT id FROM movies WHERE tmdb_id = 76600), (SELECT id FROM genres WHERE tmdb_id = 12)),
+
+((SELECT id FROM movies WHERE tmdb_id = 155), (SELECT id FROM genres WHERE tmdb_id = 18)),
+((SELECT id FROM movies WHERE tmdb_id = 155), (SELECT id FROM genres WHERE tmdb_id = 28)),
+((SELECT id FROM movies WHERE tmdb_id = 155), (SELECT id FROM genres WHERE tmdb_id = 80));
