@@ -119,6 +119,21 @@
         </a>
     </div>
 
+    <!-- Confirm Modal for Delete -->
+    <div id="deleteConfirmModal" class="confirm-overlay">
+        <div class="confirm-box">
+            <div class="confirm-icon">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="confirm-title">Xác nhận Ẩn Phim</h3>
+            <p class="confirm-desc" id="deleteConfirmDesc">Bạn chắc chắn muốn ẩn phim này?</p>
+            <div class="confirm-actions">
+                <button type="button" class="confirm-btn cancel" onclick="hideDeleteConfirm()">Huỷ</button>
+                <button type="button" class="confirm-btn danger" onclick="submitDeleteForm()">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+
     <script th:src="@{/js/admin/movie-list.js}"></script>
 </th:block>
 </body>

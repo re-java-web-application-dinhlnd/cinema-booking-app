@@ -4,6 +4,7 @@ import com.re.cinemabookingapp.dto.tmdb.TmdbMovieDto;
 import com.re.cinemabookingapp.entity.Genre;
 import com.re.cinemabookingapp.entity.Movie;
 import com.re.cinemabookingapp.enums.MovieStatus;
+import com.re.cinemabookingapp.dto.movie.MovieUpdateDto;
 import com.re.cinemabookingapp.repository.GenreRepository;
 import com.re.cinemabookingapp.repository.MovieRepository;
 import com.re.cinemabookingapp.service.MovieService;
@@ -92,12 +93,16 @@ public class MovieServiceImpl implements MovieService {
 
     @Override
     @Transactional
-    public Movie updateMovie(Long id, String title, String description, Integer durationMinutes, MovieStatus status) {
+    public Movie updateMovie(Long id, MovieUpdateDto dto) {
         Movie movie = getById(id);
-        movie.setTitle(title);
-        movie.setDescription(description);
-        movie.setDurationMinutes(durationMinutes);
-        movie.setStatus(status);
+        movie.setTitle(dto.getTitle());
+        movie.setDescription(dto.getDescription());
+        movie.setDurationMinutes(dto.getDurationMinutes());
+        movie.setReleaseDate(dto.getReleaseDate());
+        movie.setTrailerUrl(dto.getTrailerUrl());
+        movie.setStatus(dto.getStatus());
+        
+        log.info("Updated movie: '{}' (id={})", movie.getTitle(), id);
         return movieRepository.save(movie);
     }
 

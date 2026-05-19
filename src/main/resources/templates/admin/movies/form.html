@@ -4,48 +4,119 @@
 <body>
 <th:block th:fragment="pageContent">
     <link rel="stylesheet" th:href="@{/css/admin/movies.css}"/>
+    <link rel="stylesheet" th:href="@{/css/admin/movie-form.css}"/>
 
-    <div class="page-header">
-        <h1><i class="fa-solid fa-pen-to-square"></i> Chỉnh sửa Phim</h1>
+    <div class="movie-form-container">
+        <div class="form-header">
+            <h2><i class="fa-solid fa-pen-to-square"></i> Chỉnh sửa thông tin phim</h2>
+            <a th:href="@{/admin/movies}" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Quay lại</a>
+        </div>
+
+        <div class="form-card">
+            <!-- Cột trái: Poster -->
+            <div class="form-poster-col">
+                <div class="poster-preview">
+                    <img th:if="${movie.posterUrl}" th:src="${movie.posterUrl}" alt="Poster" />
+                    <!-- Nút Play hiển thị nếu có trailerUrl -->
+                    <button type="button" th:if="${movie.trailerUrl != null and !movie.trailerUrl.isBlank()}" 
+                            class="tmdb-poster-play-overlay" 
+                            title="Xem Trailer" 
+                            th:attr="data-trailer-url=${movie.trailerUrl}"
+                            onclick="openTrailerModal(this.getAttribute('data-trailer-url'))">
+                        <i class="fa-solid fa-play"></i>
+                    </button>
+                    <div th:unless="${movie.posterUrl}" class="poster-empty">
+                        <i class="fa-solid fa-image"></i>
+                    </div>
+                </div>
+                <div class="poster-info">
+                    <p><strong>TMDB ID:</strong> <span th:text="${movie.tmdbId}"></span></p>
+                    <p class="poster-hint">
+                        <i class="fa-solid fa-circle-info"></i> Poster được đồng bộ từ TMDB.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Cột phải: Form -->
+            <div class="form-input-col">
+                <form id="editMovieForm" th:action="@{/admin/movies/{id}/edit(id=${movie.id})}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                    
+                    <div class="form-group">
+                        <label for="title">Tên phim <span class="required">*</span></label>
+                        <input type="text" id="title" name="title" class="form-control" th:value="${movie.title}" required />
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="durationMinutes">Thời lượng (phút) <span class="required">*</span></label>
+                            <input type="number" id="durationMinutes" name="durationMinutes" class="form-control" th:value="${movie.durationMinutes}" required min="1" />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="releaseDate">Ngày khởi chiếu</label>
+                            <input type="date" id="releaseDate" name="releaseDate" class="form-control" th:value="${movie.releaseDate}" />
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="trailerUrl">YouTube Trailer URL</label>
+                        <input type="text" id="trailerUrl" name="trailerUrl" class="form-control" th:value="${movie.trailerUrl}" placeholder="VD: https://www.youtube.com/watch?v=..." />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="status">Trạng thái <span class="required">*</span></label>
+                        <select id="status" name="status" class="form-control" required>
+                            <option th:each="st : ${statuses}" 
+                                    th:value="${st}" 
+                                    th:text="${st == T(com.re.cinemabookingapp.enums.MovieStatus).ACTIVE ? 'Đang chiếu' : (st == T(com.re.cinemabookingapp.enums.MovieStatus).COMING_SOON ? 'Sắp chiếu' : 'Đã ẩn')}"
+                                    th:selected="${movie.status == st}">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Mô tả phim</label>
+                        <textarea id="description" name="description" class="form-control" rows="5" th:text="${movie.description}"></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <a th:href="@{/admin/movies}" class="btn-cancel">Hủy bỏ</a>
+                        <button type="button" class="btn-save" onclick="showSaveConfirm()">
+                            <i class="fa-solid fa-floppy-disk"></i> Lưu thay đổi
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 
-    <form th:action="@{/admin/movies/{id}(id=${movie.id})}" method="post" class="edit-form">
-        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
-
-        <!-- Poster Preview -->
-        <img th:if="${movie.posterUrl != null}" th:src="${movie.posterUrl}"
-             alt="poster" class="poster-preview"/>
-
-        <div class="form-group">
-            <label>Tên phim</label>
-            <input type="text" name="title" th:value="${movie.title}" required/>
+    <!-- Confirm Modal -->
+    <div id="saveConfirmModal" class="confirm-overlay">
+        <div class="confirm-box">
+            <div class="confirm-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+                <i class="fa-solid fa-floppy-disk"></i>
+            </div>
+            <h3 class="confirm-title">Lưu thay đổi?</h3>
+            <p class="confirm-desc">Bạn có chắc chắn muốn lưu các thông tin đã chỉnh sửa cho phim này?</p>
+            <div class="confirm-actions">
+                <button type="button" class="confirm-btn cancel" onclick="hideSaveConfirm()">Huỷ</button>
+                <button type="button" class="confirm-btn danger" style="background: linear-gradient(135deg, #10b981, #059669); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);" onclick="submitEditForm()">Xác nhận</button>
+            </div>
         </div>
+    </div>
 
-        <div class="form-group">
-            <label>Mô tả</label>
-            <textarea name="description" th:text="${movie.description}"></textarea>
-        </div>
-
-        <div class="form-group">
-            <label>Thời lượng (phút)</label>
-            <input type="number" name="durationMinutes" th:value="${movie.durationMinutes}" min="1" required/>
-        </div>
-
-        <div class="form-group">
-            <label>Trạng thái</label>
-            <select name="status">
-                <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}"
-                        th:selected="${s == movie.status}"></option>
-            </select>
-        </div>
-
-        <div class="form-actions">
-            <button type="submit" class="btn-save">
-                <i class="fa-solid fa-floppy-disk"></i> Lưu thay đổi
+    <!-- ========== TRAILER MODAL (lightweight) ========== -->
+    <div id="trailerModal" class="trailer-modal-overlay hidden">
+        <div class="trailer-modal">
+            <button class="tmdb-modal-close" onclick="closeTrailerModal()">
+                <i class="fa-solid fa-xmark"></i>
             </button>
-            <a th:href="@{/admin/movies}" class="btn-cancel">Hủy bỏ</a>
+            <div id="trailerModalPlayer" class="trailer-modal-player"></div>
         </div>
-    </form>
+    </div>
+
+    <script th:src="@{/js/admin/movie-form.js}"></script>
 </th:block>
 </body>
 </html>

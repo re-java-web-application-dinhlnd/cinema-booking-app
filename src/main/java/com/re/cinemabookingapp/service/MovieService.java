@@ -2,6 +2,7 @@ package com.re.cinemabookingapp.service;
 
 import com.re.cinemabookingapp.entity.Movie;
 import com.re.cinemabookingapp.enums.MovieStatus;
+import com.re.cinemabookingapp.dto.movie.MovieUpdateDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -20,7 +21,7 @@ public interface MovieService {
     Movie getById(Long id);
 
     /** Cập nhật thông tin phim */
-    Movie updateMovie(Long id, String title, String description, Integer durationMinutes, MovieStatus status);
+    Movie updateMovie(Long id, MovieUpdateDto dto);
 
     /** Xóa mềm (ACTIVE → INACTIVE) */
     void softDelete(Long id);

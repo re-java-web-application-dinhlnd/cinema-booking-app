@@ -4,6 +4,7 @@ import com.re.cinemabookingapp.dto.tmdb.TmdbMovieDto;
 import com.re.cinemabookingapp.dto.tmdb.TmdbSearchResponse;
 import com.re.cinemabookingapp.entity.Movie;
 import com.re.cinemabookingapp.enums.MovieStatus;
+import com.re.cinemabookingapp.dto.movie.MovieUpdateDto;
 import com.re.cinemabookingapp.repository.MovieRepository;
 import com.re.cinemabookingapp.service.MovieService;
 import com.re.cinemabookingapp.service.TmdbService;
@@ -166,15 +167,12 @@ public class AdminMovieController {
     /**
      * Xử lý cập nhật phim
      */
-    @PostMapping("/{id}")
+    @PostMapping("/{id}/edit")
     public String updateMovie(@PathVariable Long id,
-                              @RequestParam String title,
-                              @RequestParam String description,
-                              @RequestParam Integer durationMinutes,
-                              @RequestParam MovieStatus status,
+                              @ModelAttribute("movieDto") MovieUpdateDto dto,
                               RedirectAttributes redirectAttributes) {
         try {
-            movieService.updateMovie(id, title, description, durationMinutes, status);
+            movieService.updateMovie(id, dto);
             redirectAttributes.addFlashAttribute("successMessage", "Cập nhật phim thành công!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", "Lỗi: " + e.getMessage());

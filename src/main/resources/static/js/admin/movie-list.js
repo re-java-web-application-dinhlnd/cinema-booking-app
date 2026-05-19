@@ -10,11 +10,24 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Confirm dialog for forms with data-confirm
+    let currentDeleteForm = null;
+
     document.querySelectorAll('form[data-confirm]').forEach(form => {
         form.addEventListener('submit', (e) => {
-            if (!confirm(form.dataset.confirm)) {
-                e.preventDefault();
-            }
+            e.preventDefault();
+            currentDeleteForm = form;
+            const desc = form.dataset.confirm;
+            if (desc) $('deleteConfirmDesc').textContent = desc;
+            $('deleteConfirmModal').classList.add('show');
         });
     });
+
+    window.hideDeleteConfirm = () => {
+        $('deleteConfirmModal').classList.remove('show');
+        currentDeleteForm = null;
+    };
+
+    window.submitDeleteForm = () => {
+        if (currentDeleteForm) currentDeleteForm.submit();
+    };
 });
