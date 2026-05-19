@@ -35,6 +35,9 @@ public class Movie {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "tmdb_id", unique = true)
+    private Long tmdbId;
+
     @Column(nullable = false, length = 255)
     private String title;
 
@@ -49,6 +52,12 @@ public class Movie {
 
     @Column(name = "poster_url", length = 500)
     private String posterUrl;
+
+    @Column(name = "trailer_url", length = 500)
+    private String trailerUrl;
+
+    @Column(name = "vote_average")
+    private Double voteAverage;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
