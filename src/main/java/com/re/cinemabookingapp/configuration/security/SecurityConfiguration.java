@@ -45,7 +45,7 @@ public class SecurityConfiguration {
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
-                .loginPage("/admin/login")          // Trang login mặc định khi redirect
+                .loginPage("/")          // Trang login mặc định khi redirect
                 .loginProcessingUrl("/process-login") // URL Spring Security xử lý xác thực
                 .successHandler(successHandler)
                 .failureHandler(failureHandler)
