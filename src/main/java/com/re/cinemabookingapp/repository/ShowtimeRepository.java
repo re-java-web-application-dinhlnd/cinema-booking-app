@@ -53,4 +53,12 @@ public interface ShowtimeRepository extends JpaRepository<Showtime, Long> {
                                    @Param("roomId") Long roomId,
                                    @Param("status") ShowtimeStatus status,
                                    Pageable pageable);
+
+    @Query("SELECT s FROM Showtime s WHERE s.movie.id = :movieId " +
+           "AND s.status = 'ACTIVE' " +
+           "AND s.startTime >= :dayStart AND s.startTime < :dayEnd " +
+           "ORDER BY s.room.name, s.startTime")
+    List<Showtime> findActiveByMovieAndDate(@Param("movieId") Long movieId,
+                                            @Param("dayStart") Timestamp dayStart,
+                                            @Param("dayEnd") Timestamp dayEnd);
 }

@@ -37,7 +37,8 @@ public class SecurityConfiguration {
                 // Tài nguyên công khai
                 .requestMatchers(
                     "/", "/api/auth/register", "/process-login",
-                    "/css/**", "/js/**", "/assets/**", "/error", "/error/**"
+                    "/css/**", "/js/**", "/assets/**", "/error", "/error/**",
+                    "/movies/**", "/api/showtimes"
                 ).permitAll()
 
                 // Trang login riêng
@@ -46,6 +47,7 @@ public class SecurityConfiguration {
                 // Phân quyền theo role
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/pos/**").hasAnyRole("ADMIN", "STAFF")
+                .requestMatchers("/booking/**").hasRole("CUSTOMER")
 
                 // Tất cả request khác cần xác thực
                 .anyRequest().authenticated()

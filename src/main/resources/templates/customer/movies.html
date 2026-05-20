@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org" th:replace="~{layout/main-layout :: layout(~{::main})}">
+<head>
+    <title>CineWave - Phim</title>
+</head>
+<body>
+<main>
+    <link rel="stylesheet" th:href="@{/css/customer/movies.css}" />
+    <div class="movies-page">
+        <div class="movies-container">
+
+            <div class="movies-tabs">
+                <a th:href="@{/movies?tab=now}"
+                   th:classappend="${tab == 'now' ? 'active' : ''}"
+                   class="tab-item">Đang chiếu</a>
+                <a th:href="@{/movies?tab=coming}"
+                   th:classappend="${tab == 'coming' ? 'active' : ''}"
+                   class="tab-item">Sắp chiếu</a>
+            </div>
+
+            <div class="movie-grid" th:if="${!movies.isEmpty()}">
+                <div class="movie-card" th:each="movie : ${movies}">
+                    <div class="movie-poster-wrap">
+                        <img th:if="${movie.posterUrl != null}"
+                             th:src="${movie.posterUrl}" th:alt="${movie.title}"
+                             class="movie-poster-img" loading="lazy" />
+                        <div th:if="${movie.posterUrl == null}" class="movie-poster-placeholder">
+                            <i class="fa-solid fa-film"></i>
+                        </div>
+                        <div class="movie-overlay">
+                            <a th:href="@{/movies/{id}(id=${movie.id})}" class="btn-overlay btn-buy-ticket">
+                                <i class="fa-solid fa-ticket"></i> Mua vé
+                            </a>
+                            <button th:if="${movie.trailerUrl != null}"
+                                    class="btn-overlay btn-trailer-card"
+                                    th:data-trailer="${movie.trailerUrl}"
+                                    onclick="openTrailerModal(this.dataset.trailer)">
+                                <i class="fa-solid fa-play"></i> Trailer
+                            </button>
+                        </div>
+                        <div class="movie-rating" th:if="${movie.voteAverage != null}">
+                            <i class="fa-solid fa-star"></i>
+                            <span th:text="${#numbers.formatDecimal(movie.voteAverage, 1, 1)}"></span>
+                        </div>
+                    </div>
+                    <a th:href="@{/movies/{id}(id=${movie.id})}" class="movie-card-link">
+                        <div class="movie-info">
+                            <h3 class="movie-title" th:text="${movie.title}">Movie Title</h3>
+                            <div class="movie-meta">
+                                <span th:if="${movie.durationMinutes != null}">
+                                    <i class="fa-regular fa-clock"></i>
+                                    <span th:text="${movie.durationMinutes + ' phút'}"></span>
+                                </span>
+                                <span th:if="${movie.genres != null && !movie.genres.isEmpty()}"
+                                      class="movie-genre"
+                                      th:text="${movie.genres[0].name}"></span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="movies-empty" th:if="${movies.isEmpty()}">
+                <i class="fa-solid fa-film"></i>
+                <p th:text="${tab == 'coming' ? 'Chưa có phim sắp chiếu' : 'Chưa có phim đang chiếu'}"></p>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="trailerModal" class="trailer-modal-overlay" onclick="closeTrailerModal(event)">
+        <div class="trailer-modal-box">
+            <button class="trailer-modal-close" onclick="closeTrailerModal()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="trailer-modal-content">
+                <iframe id="trailerIframe" src="" frameborder="0"
+                        allow="autoplay; encrypted-media" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/customer/movies.js}"></script>
+</main>
+</body>
+</html>

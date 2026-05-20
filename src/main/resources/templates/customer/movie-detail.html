@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      th:replace="~{layout/main-layout :: layout(~{::main})}">
+<head>
+    <title th:text="${movie.title + ' - CineWave'}">Movie Detail</title>
+</head>
+<body>
+<main>
+    <link rel="stylesheet" th:href="@{/css/customer/movies.css}" />
+
+    <div class="detail-page">
+
+        <div class="detail-trailer-banner" th:if="${movie.trailerUrl != null}">
+            <div class="trailer-banner-inner" id="trailerBanner">
+                <img th:src="${movie.posterUrl != null ? movie.posterUrl : ''}"
+                     class="trailer-banner-bg" alt="" />
+                <button class="trailer-play-btn" th:data-trailer="${movie.trailerUrl}"
+                        onclick="openTrailerModal(this.dataset.trailer)">
+                    <i class="fa-solid fa-play"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="detail-container">
+            <div class="detail-hero">
+                <div class="detail-poster">
+                    <img th:if="${movie.posterUrl != null}" th:src="${movie.posterUrl}"
+                         th:alt="${movie.title}" class="detail-poster-img" />
+                    <div th:if="${movie.posterUrl == null}" class="detail-poster-placeholder">
+                        <i class="fa-solid fa-film"></i>
+                    </div>
+                </div>
+                <div class="detail-info">
+                    <h1 class="detail-title" th:text="${movie.title}">Movie Title</h1>
+                    <div class="detail-meta">
+                        <span class="detail-rating" th:if="${movie.voteAverage != null}">
+                            <i class="fa-solid fa-star"></i>
+                            <span th:text="${#numbers.formatDecimal(movie.voteAverage, 1, 1)}"></span>
+                        </span>
+                        <span th:if="${movie.durationMinutes != null}">
+                            <i class="fa-regular fa-clock"></i>
+                            <span th:text="${movie.durationMinutes + ' phút'}"></span>
+                        </span>
+                        <span th:if="${movie.releaseDate != null}">
+                            <i class="fa-regular fa-calendar"></i>
+                            <span th:text="${#dates.format(movie.releaseDate, 'dd/MM/yyyy')}"></span>
+                        </span>
+                    </div>
+                    <div class="detail-genres" th:if="${movie.genres != null && !movie.genres.isEmpty()}">
+                        <span class="genre-tag" th:each="g : ${movie.genres}" th:text="${g.name}"></span>
+                    </div>
+                    <p class="detail-desc" th:if="${movie.description != null}" th:text="${movie.description}"></p>
+                </div>
+            </div>
+
+            <div class="showtime-section">
+                <h2 class="section-heading">
+                    <i class="fa-solid fa-calendar-days"></i> Lịch Chiếu
+                </h2>
+
+                <div class="date-carousel">
+                    <button class="date-nav-btn" id="datePrev">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <div class="date-tabs" id="dateTabs"></div>
+                    <button class="date-nav-btn" id="dateNext">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+
+                <div id="showtimeContent">
+                    <div th:if="${showtimes != null && !showtimes.isEmpty()}" class="showtime-list">
+                        <a th:each="s : ${showtimes}"
+                           th:href="@{/booking/seats(showtimeId=${s.id})}"
+                           class="showtime-chip"
+                           sec:authorize="isAuthenticated()">
+                            <span class="chip-time"
+                                  th:text="${#dates.format(s.startTime, 'HH:mm')}">19:30</span>
+                        </a>
+                        <button th:each="s : ${showtimes}"
+                                class="showtime-chip"
+                                sec:authorize="!isAuthenticated()"
+                                onclick="openModal('loginView')">
+                            <span class="chip-time"
+                                  th:text="${#dates.format(s.startTime, 'HH:mm')}">19:30</span>
+                        </button>
+                    </div>
+                    <div th:if="${showtimes == null || showtimes.isEmpty()}" class="no-showtimes">
+                        <i class="fa-regular fa-calendar-xmark"></i>
+                        <p>Không có suất chiếu nào trong ngày này</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="trailerModal" class="trailer-modal-overlay" onclick="closeTrailerModal(event)">
+        <div class="trailer-modal-box">
+            <button class="trailer-modal-close" onclick="closeTrailerModal()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="trailer-modal-content">
+                <iframe id="trailerIframe" src="" frameborder="0"
+                        allow="autoplay; encrypted-media" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+    <input type="hidden" id="movieId" th:value="${movie.id}" />
+    <script th:src="@{/js/customer/movies.js}"></script>
+    <script th:src="@{/js/customer/movie-detail.js}"></script>
+</main>
+</body>
+</html>
