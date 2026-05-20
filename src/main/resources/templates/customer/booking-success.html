@@ -83,10 +83,16 @@
                               th:text="${#numbers.formatDecimal(booking.totalAmount, 0, 'COMMA', 0, 'POINT') + 'đ'}">155,000đ</span>
                     </div>
 
+
                     <div class="ticket-row">
                         <span class="ticket-label">Trạng thái</span>
-                        <span class="ticket-status confirmed">
-                            <i class="fa-solid fa-check-circle"></i> Đã xác nhận
+                        <span class="ticket-status"
+                              th:classappend="${booking.status.name() == 'CONFIRMED' ? 'confirmed' :
+                                               (booking.status.name() == 'CANCELLED' ? 'cancelled' : 'pending')}">
+                            <i th:class="${booking.status.name() == 'CONFIRMED' ? 'fa-solid fa-check-circle' :
+                                           (booking.status.name() == 'CANCELLED' ? 'fa-solid fa-ban' : 'fa-solid fa-clock')}"></i>
+                            <span th:text="${booking.status.name() == 'CONFIRMED' ? 'Đã xác nhận' :
+                                            (booking.status.name() == 'CANCELLED' ? 'Đã hủy' : 'Chờ xử lý')}">Status</span>
                         </span>
                     </div>
                 </div>
@@ -100,8 +106,51 @@
                     <i class="fa-solid fa-receipt"></i> Lịch sử đặt vé
                 </a>
             </div>
+
+            <div th:if="${booking.status.name() == 'CONFIRMED' && canCancel}" class="cancel-section">
+                <button type="button" class="btn-cancel" onclick="showCancelConfirm()">
+                    <i class="fa-solid fa-xmark"></i> Hủy vé
+                </button>
+                <p class="cancel-hint">
+                    <i class="fa-solid fa-circle-info"></i>
+                    Có thể hủy trước 24 giờ so với giờ chiếu
+                </p>
+            </div>
         </div>
     </div>
+
+    <!-- Cancel Confirm Modal -->
+    <div id="cancelConfirmModal" class="confirm-overlay" th:if="${booking.status.name() == 'CONFIRMED' && canCancel}">
+        <div class="confirm-box">
+            <div class="confirm-icon">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="confirm-title">Xác nhận hủy vé</h3>
+            <p class="confirm-desc">Bạn có chắc chắn muốn hủy vé?<br/>Hành động này không thể hoàn tác.</p>
+            <div class="confirm-actions">
+                <button type="button" class="confirm-btn cancel" onclick="hideCancelConfirm()">Không</button>
+                <button type="button" class="confirm-btn danger" onclick="submitCancelForm()">Xác nhận hủy</button>
+            </div>
+        </div>
+    </div>
+
+    <form th:if="${booking.status.name() == 'CONFIRMED' && canCancel}"
+          th:action="@{/booking/cancel}" method="post" id="cancelForm" style="display:none">
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        <input type="hidden" name="code" th:value="${booking.bookingCode}" />
+    </form>
+
+    <script>
+    function showCancelConfirm() {
+        document.getElementById('cancelConfirmModal').classList.add('is-open');
+    }
+    function hideCancelConfirm() {
+        document.getElementById('cancelConfirmModal').classList.remove('is-open');
+    }
+    function submitCancelForm() {
+        document.getElementById('cancelForm').submit();
+    }
+    </script>
 </main>
 </body>
 </html>

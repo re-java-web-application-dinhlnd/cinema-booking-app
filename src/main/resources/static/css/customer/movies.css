@@ -497,15 +497,45 @@
     font-family: inherit;
     font-size: 0.9rem;
     transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.2rem;
 }
 
-.showtime-chip:hover {
+.showtime-chip:hover:not(.disabled) {
     border-color: var(--color-primary);
     color: var(--color-primary);
     box-shadow: 0 2px 8px rgba(6, 182, 212, 0.15);
 }
 
+.showtime-chip.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background: #F1F5F9;
+    border-color: #E2E8F0;
+}
+
 .chip-time { font-weight: 600; }
+
+.chip-badge {
+    font-size: 0.6rem;
+    font-weight: 700;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.chip-badge.sold-out {
+    background: rgba(239, 68, 68, 0.1);
+    color: #EF4444;
+}
+
+.chip-badge.low-seats {
+    background: rgba(245, 158, 11, 0.1);
+    color: #F59E0B;
+}
 
 .no-showtimes {
     text-align: center;

@@ -4,7 +4,9 @@ import com.re.cinemabookingapp.entity.Movie;
 import com.re.cinemabookingapp.entity.Showtime;
 import com.re.cinemabookingapp.enums.MovieStatus;
 import com.re.cinemabookingapp.repository.MovieRepository;
+import com.re.cinemabookingapp.repository.SeatRepository;
 import com.re.cinemabookingapp.repository.ShowtimeRepository;
+import com.re.cinemabookingapp.repository.TicketRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +31,8 @@ public class MoviePageController {
 
     private final MovieRepository movieRepository;
     private final ShowtimeRepository showtimeRepository;
+    private final SeatRepository seatRepository;
+    private final TicketRepository ticketRepository;
 
     @GetMapping("/movies")
     public String moviesPage(@RequestParam(defaultValue = "now") String tab, Model model) {
@@ -72,9 +76,16 @@ public class MoviePageController {
         List<Map<String, Object>> items = showtimes.stream()
                 .filter(s -> !isToday || s.getStartTime().toLocalDateTime().isAfter(LocalDateTime.now()))
                 .map(s -> {
+                    long totalSeats = seatRepository.countByRoomId(s.getRoom().getId());
+                    long bookedSeats = ticketRepository.countBookedSeats(s.getId());
+                    long availableSeats = totalSeats - bookedSeats;
+
                     Map<String, Object> m = new HashMap<>();
                     m.put("id", s.getId());
                     m.put("startTime", s.getStartTime().toLocalDateTime().toLocalTime().toString().substring(0, 5));
+                    m.put("availableSeats", availableSeats);
+                    m.put("totalSeats", totalSeats);
+                    m.put("soldOut", availableSeats <= 0);
                     return m;
                 })
                 .collect(Collectors.toList());

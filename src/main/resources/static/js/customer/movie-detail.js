@@ -102,10 +102,23 @@ document.addEventListener('DOMContentLoaded', () => {
         let html = '<div class="showtime-list">';
 
         list.forEach(s => {
-            if (isAuth) {
-                html += `<a href="/booking/seats?showtimeId=${s.id}" class="showtime-chip"><span class="chip-time">${s.startTime}</span></a>`;
+            const isSoldOut = s.soldOut;
+            const availPct = s.totalSeats > 0 ? (s.availableSeats / s.totalSeats) : 0;
+            const isLow = !isSoldOut && availPct <= 0.2;
+
+            let badge = '';
+            if (isSoldOut) {
+                badge = '<span class="chip-badge sold-out">Hết vé</span>';
+            } else if (isLow) {
+                badge = '<span class="chip-badge low-seats">Còn ' + s.availableSeats + ' ghế</span>';
+            }
+
+            if (isSoldOut) {
+                html += '<div class="showtime-chip disabled"><span class="chip-time">' + s.startTime + '</span>' + badge + '</div>';
+            } else if (isAuth) {
+                html += '<a href="/booking/seats?showtimeId=' + s.id + '" class="showtime-chip"><span class="chip-time">' + s.startTime + '</span>' + badge + '</a>';
             } else {
-                html += `<button class="showtime-chip" onclick="openModal('loginView')"><span class="chip-time">${s.startTime}</span></button>`;
+                html += '<button class="showtime-chip" onclick="openModal(\'loginView\')"><span class="chip-time">' + s.startTime + '</span>' + badge + '</button>';
             }
         });
 

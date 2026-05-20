@@ -16,4 +16,6 @@ public interface BookingService {
     List<SeatStatusDto> getSeatStatus(Long showtimeId);
 
     Page<Booking> getUserBookings(Long userId, Pageable pageable);
+
+    void cancelBooking(String bookingCode, User currentUser);
 }

@@ -41,6 +41,7 @@ public class BookingServiceImpl implements BookingService {
     private static final BigDecimal SWEETBOX_MULTIPLIER = new BigDecimal("1.5");
     private static final int MAX_SEATS_PER_BOOKING = 8;
     private static final int MAX_PRODUCT_QUANTITY = 10;
+    private static final int CANCEL_DEADLINE_HOURS = 24;
 
     @Override
     @Transactional
@@ -169,6 +170,48 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public Page<Booking> getUserBookings(Long userId, Pageable pageable) {
         return bookingRepository.findByUserIdOrderByBookingDateDesc(userId, pageable);
+    }
+
+    @Override
+    @Transactional
+    public void cancelBooking(String bookingCode, User currentUser) {
+        Booking booking = bookingRepository.findByBookingCode(bookingCode)
+                .orElseThrow(() -> new IllegalArgumentException("Đơn đặt vé không tồn tại!"));
+
+        if (!booking.getUser().getId().equals(currentUser.getId())) {
+            throw new IllegalArgumentException("Bạn không có quyền hủy đơn này!");
+        }
+
+        if (booking.getStatus() == BookingStatus.CANCELLED) {
+            throw new IllegalArgumentException("Đơn này đã được hủy trước đó!");
+        }
+
+        if (booking.getStatus() != BookingStatus.CONFIRMED) {
+            throw new IllegalArgumentException("Chỉ có thể hủy đơn đã xác nhận!");
+        }
+
+        if (!booking.getTickets().isEmpty()) {
+            Showtime showtime = booking.getTickets().get(0).getShowtime();
+
+            if (showtime.getStartTime().before(Timestamp.valueOf(LocalDateTime.now()))) {
+                throw new IllegalArgumentException("Không thể hủy vé cho suất chiếu đã bắt đầu!");
+            }
+
+            LocalDateTime deadline = showtime.getStartTime().toLocalDateTime()
+                    .minusHours(CANCEL_DEADLINE_HOURS);
+            if (LocalDateTime.now().isAfter(deadline)) {
+                throw new IllegalArgumentException(
+                        "Chỉ có thể hủy vé trước " + CANCEL_DEADLINE_HOURS + " giờ so với giờ chiếu!");
+            }
+        }
+
+        // Không xóa tickets/products — giữ lại để hiển thị lịch sử
+        // Ghế tự động được giải phóng vì query đặt vé filter: booking.status <> 'CANCELLED'
+        booking.setStatus(BookingStatus.CANCELLED);
+        bookingRepository.save(booking);
+
+        log.info("Booking #{} (code: {}) cancelled by user: {}",
+                booking.getId(), bookingCode, currentUser.getUsername());
     }
 
     private BigDecimal calculateSeatPrice(BigDecimal basePrice, SeatType seatType) {

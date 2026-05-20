@@ -6,48 +6,97 @@
 </head>
 <body>
 <main>
-    <link rel="stylesheet" th:href="@{/css/customer/booking-success.css}" />
+    <link rel="stylesheet" th:href="@{/css/customer/booking-history.css}" />
 
     <div class="history-page">
         <div class="history-container">
-            <h1 class="history-title">
-                <i class="fa-solid fa-receipt"></i> Lịch Sử Đặt Vé
-            </h1>
+            <div class="history-header">
+                <h1 class="history-title">
+                    <i class="fa-solid fa-clock-rotate-left"></i> Lịch Sử Đặt Vé
+                </h1>
+                <a th:href="@{/movies}" class="history-browse-btn">
+                    <i class="fa-solid fa-plus"></i> Đặt vé mới
+                </a>
+            </div>
 
             <div th:if="${bookings.isEmpty()}" class="history-empty">
-                <i class="fa-regular fa-ticket"></i>
-                <p>Bạn chưa có đơn đặt vé nào</p>
-                <a th:href="@{/movies}" class="btn-action btn-primary-action" style="margin-top:1rem">
+                <div class="empty-icon">
+                    <i class="fa-regular fa-ticket"></i>
+                </div>
+                <h3>Chưa có đơn đặt vé nào</h3>
+                <p>Hãy khám phá phim đang chiếu và đặt vé ngay!</p>
+                <a th:href="@{/movies}" class="btn-action btn-primary-action">
                     <i class="fa-solid fa-film"></i> Xem phim ngay
                 </a>
             </div>
 
             <div th:if="${!bookings.isEmpty()}" class="history-list">
-                <a th:each="b : ${bookings}"
-                   th:href="@{/booking/success(code=${b.bookingCode})}"
-                   class="history-card">
-                    <div class="history-card-info">
-                        <span class="history-card-title"
-                              th:text="${!b.tickets.isEmpty() ? b.tickets[0].showtime.movie.title : 'N/A'}">Movie</span>
-                        <div class="history-card-meta">
-                            <span th:if="${!b.tickets.isEmpty()}">
-                                <i class="fa-regular fa-clock"></i>
-                                <span th:text="${#dates.format(b.tickets[0].showtime.startTime, 'HH:mm dd/MM/yyyy')}"></span>
-                            </span>
-                            <span>
-                                <i class="fa-solid fa-chair"></i>
-                                <span th:text="${b.tickets.size()} + ' vé'">2 vé</span>
-                            </span>
+                <div th:each="b : ${bookings}" class="history-card"
+                     th:classappend="${b.status.name() == 'CANCELLED' ? 'is-cancelled' : ''}">
+
+                    <a th:href="@{/booking/success(code=${b.bookingCode})}" class="history-card-link">
+                        <div class="hc-poster-wrap">
+                            <img th:if="${!b.tickets.isEmpty() && b.tickets[0].showtime.movie.posterUrl != null}"
+                                 th:src="${b.tickets[0].showtime.movie.posterUrl}"
+                                 class="hc-poster" alt="" />
+                            <div th:if="${b.tickets.isEmpty()}" class="hc-poster-placeholder">
+                                <i class="fa-solid fa-film"></i>
+                            </div>
                         </div>
-                        <span class="history-status"
-                              th:classappend="${b.status.name() == 'CONFIRMED' ? 'confirmed' :
-                                               (b.status.name() == 'CANCELLED' ? 'cancelled' : 'pending')}"
-                              th:text="${b.status.name() == 'CONFIRMED' ? 'Đã xác nhận' :
-                                        (b.status.name() == 'CANCELLED' ? 'Đã hủy' : 'Chờ xử lý')}">Status</span>
+
+                        <div class="hc-body">
+                            <div class="hc-top">
+                                <span class="hc-movie-title"
+                                      th:text="${!b.tickets.isEmpty() ? b.tickets[0].showtime.movie.title : 'N/A'}">Movie</span>
+                                <span class="hc-code"
+                                      th:text="'#' + ${b.bookingCode}">Code</span>
+                            </div>
+
+                            <div class="hc-meta">
+                                <span th:if="${!b.tickets.isEmpty()}">
+                                    <i class="fa-regular fa-calendar"></i>
+                                    <span th:text="${#dates.format(b.tickets[0].showtime.startTime, 'dd/MM/yyyy')}"></span>
+                                </span>
+                                <span th:if="${!b.tickets.isEmpty()}">
+                                    <i class="fa-regular fa-clock"></i>
+                                    <span th:text="${#dates.format(b.tickets[0].showtime.startTime, 'HH:mm')}"></span>
+                                </span>
+                                <span>
+                                    <i class="fa-solid fa-chair"></i>
+                                    <span th:text="${b.tickets.size()} + ' vé'">2 vé</span>
+                                </span>
+                            </div>
+
+                            <div class="hc-bottom">
+                                <span class="hc-status"
+                                      th:classappend="${b.status.name() == 'CONFIRMED' ? 'confirmed' :
+                                                       (b.status.name() == 'CANCELLED' ? 'cancelled' : 'pending')}">
+                                    <i th:class="${b.status.name() == 'CONFIRMED' ? 'fa-solid fa-check-circle' :
+                                                  (b.status.name() == 'CANCELLED' ? 'fa-solid fa-ban' : 'fa-solid fa-clock')}"></i>
+                                    <span th:text="${b.status.name() == 'CONFIRMED' ? 'Đã xác nhận' :
+                                                   (b.status.name() == 'CANCELLED' ? 'Đã hủy' : 'Chờ xử lý')}">Status</span>
+                                </span>
+                                <span class="hc-amount"
+                                      th:text="${#numbers.formatDecimal(b.totalAmount, 0, 'COMMA', 0, 'POINT') + 'đ'}">155,000đ</span>
+                            </div>
+                        </div>
+
+                        <div class="hc-arrow">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </div>
+                    </a>
+
+                    <div th:if="${cancelableCodes.contains(b.bookingCode)}" class="hc-actions">
+                        <form th:action="@{/booking/cancel}" method="post" class="cancel-inline-form">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                            <input type="hidden" name="code" th:value="${b.bookingCode}" />
+                            <button type="button" class="btn-cancel-sm"
+                                    th:onclick="'showCancelModal(this)'">
+                                <i class="fa-solid fa-xmark"></i> Hủy vé
+                            </button>
+                        </form>
                     </div>
-                    <span class="history-card-amount"
-                          th:text="${#numbers.formatDecimal(b.totalAmount, 0, 'COMMA', 0, 'POINT') + 'đ'}">155,000đ</span>
-                </a>
+                </div>
             </div>
 
             <div th:if="${bookings.totalPages > 1}" class="history-pagination">
@@ -70,6 +119,41 @@
             </div>
         </div>
     </div>
+
+    <!-- Cancel Confirm Modal -->
+    <div id="cancelConfirmModal" class="confirm-overlay">
+        <div class="confirm-box">
+            <div class="confirm-icon">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="confirm-title">Xác nhận hủy vé</h3>
+            <p class="confirm-desc">Bạn có chắc chắn muốn hủy vé?<br/>Hành động này không thể hoàn tác.</p>
+            <div class="confirm-actions">
+                <button type="button" class="confirm-btn cancel" onclick="hideCancelModal()">Không</button>
+                <button type="button" class="confirm-btn danger" id="confirmCancelBtn">Xác nhận hủy</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    var pendingCancelForm = null;
+
+    function showCancelModal(btn) {
+        pendingCancelForm = btn.closest('form');
+        document.getElementById('cancelConfirmModal').classList.add('is-open');
+    }
+
+    function hideCancelModal() {
+        document.getElementById('cancelConfirmModal').classList.remove('is-open');
+        pendingCancelForm = null;
+    }
+
+    document.getElementById('confirmCancelBtn').addEventListener('click', function() {
+        if (pendingCancelForm) {
+            pendingCancelForm.submit();
+        }
+    });
+    </script>
 </main>
 </body>
 </html>

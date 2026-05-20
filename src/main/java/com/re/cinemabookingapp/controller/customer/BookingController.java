@@ -220,6 +220,14 @@ public class BookingController {
         model.addAttribute("seatNames", seatNames);
         model.addAttribute("ticketTotal", ticketTotal);
         model.addAttribute("comboTotal", comboTotal);
+
+        boolean canCancel = false;
+        if (booking.getStatus().name().equals("CONFIRMED") && showtime != null) {
+            LocalDateTime deadline = showtime.getStartTime().toLocalDateTime().minusHours(24);
+            canCancel = LocalDateTime.now().isBefore(deadline);
+        }
+        model.addAttribute("canCancel", canCancel);
+
         return "customer/booking-success";
     }
 
@@ -229,9 +237,45 @@ public class BookingController {
                                  Model model) {
         Page<Booking> bookings = bookingService.getUserBookings(
                 principal.getUser().getId(), PageRequest.of(page, HISTORY_PAGE_SIZE));
+
+        java.util.Set<String> cancelableCodes = new java.util.HashSet<>();
+        for (Booking b : bookings.getContent()) {
+            if (b.getStatus() == com.re.cinemabookingapp.enums.BookingStatus.CONFIRMED
+                    && !b.getTickets().isEmpty()) {
+                Showtime st = b.getTickets().get(0).getShowtime();
+                LocalDateTime deadline = st.getStartTime().toLocalDateTime().minusHours(24);
+                if (LocalDateTime.now().isBefore(deadline)) {
+                    cancelableCodes.add(b.getBookingCode());
+                }
+            }
+        }
+
         model.addAttribute("bookings", bookings);
         model.addAttribute("currentPage", page);
+        model.addAttribute("cancelableCodes", cancelableCodes);
         return "customer/booking-history";
+    }
+
+    @PostMapping("/cancel")
+    public String cancelBooking(@RequestParam String code,
+                                @AuthenticationPrincipal CustomUserDetails principal,
+                                RedirectAttributes redirectAttributes) {
+        try {
+            if (principal == null) {
+                throw new IllegalArgumentException("Vui lòng đăng nhập!");
+            }
+
+            bookingService.cancelBooking(code, principal.getUser());
+            redirectAttributes.addFlashAttribute("toastMessage", "Hủy vé thành công!");
+            redirectAttributes.addFlashAttribute("toastType", "success");
+
+        } catch (IllegalArgumentException e) {
+            log.warn("Cancel failed — code: {}, reason: {}", code, e.getMessage());
+            redirectAttributes.addFlashAttribute("toastMessage", e.getMessage());
+            redirectAttributes.addFlashAttribute("toastType", "error");
+        }
+
+        return "redirect:/booking/history";
     }
 
     private Showtime validateShowtime(Long showtimeId) {
