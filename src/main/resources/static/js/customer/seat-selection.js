@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const seatGrid = document.getElementById('seatGrid');
-    const summaryEl = document.getElementById('bookingSummary');
+    const selectionEmpty = document.getElementById('selectionEmpty');
+    const selectionDetail = document.getElementById('selectionDetail');
     const selectedSeatsText = document.getElementById('selectedSeatsText');
     const selectedCount = document.getElementById('selectedCount');
     const totalPriceEl = document.getElementById('totalPrice');
@@ -48,11 +49,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.dataset.id = seat.seatId;
                 btn.dataset.name = seat.seatName;
                 btn.dataset.type = seat.seatType;
-                btn.textContent = seat.seatName.replace(/^[A-Z]+/, '');
+
+                const numLabel = seat.seatName.replace(/^[A-Z]+/, '');
+                btn.innerHTML = '<span class="seat-num">' + numLabel + '</span>';
 
                 if (seat.booked) {
                     btn.classList.add('booked');
                     btn.disabled = true;
+                    btn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
                 } else {
                     btn.classList.add(seat.seatType.toLowerCase());
                     btn.addEventListener('click', () => toggleSeat(btn, seat));
@@ -75,6 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (selectedSeats.has(seat.seatId)) {
             selectedSeats.delete(seat.seatId);
             btn.classList.remove('selected');
+            btn.innerHTML = '<span class="seat-num">' + seat.seatName.replace(/^[A-Z]+/, '') + '</span>';
         } else {
             if (selectedSeats.size >= MAX_SEATS) {
                 if (typeof showToast === 'function') {
@@ -84,6 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             selectedSeats.set(seat.seatId, seat);
             btn.classList.add('selected');
+            btn.innerHTML = '<i class="fa-solid fa-check"></i>';
         }
         updateSummary();
     }
@@ -102,12 +108,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const count = selectedSeats.size;
 
         if (count === 0) {
-            summaryEl.style.display = 'none';
+            selectionEmpty.style.display = 'flex';
+            selectionDetail.style.display = 'none';
             btnContinue.disabled = true;
             return;
         }
 
-        summaryEl.style.display = 'block';
+        selectionEmpty.style.display = 'none';
+        selectionDetail.style.display = 'block';
         btnContinue.disabled = false;
 
         const names = [];

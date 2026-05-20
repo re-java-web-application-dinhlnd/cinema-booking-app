@@ -9,20 +9,24 @@
     <link rel="stylesheet" th:href="@{/css/customer/booking-confirm.css}" />
 
     <div class="confirm-page">
+        <div class="booking-stepper">
+            <div class="step done"><span class="step-num"><i class="fa-solid fa-check"></i></span><span class="step-label">Chọn ghế</span></div>
+            <div class="step-line done"></div>
+            <div class="step active"><span class="step-num">2</span><span class="step-label">Combo</span></div>
+            <div class="step-line"></div>
+            <div class="step"><span class="step-num">3</span><span class="step-label">Thanh toán</span></div>
+        </div>
+
         <div class="confirm-container">
-
-            <div class="confirm-header">
-                <a th:href="@{/booking/seats(showtimeId=${showtime.id})}" class="btn-back">
-                    <i class="fa-solid fa-arrow-left"></i>
-                </a>
-                <h1 class="confirm-title">Chọn Combo & Bắp Nước</h1>
-            </div>
-
             <div class="confirm-layout">
                 <div class="combo-section">
                     <div class="combo-group" th:each="type : ${T(com.re.cinemabookingapp.enums.ProductType).values()}">
-                        <h3 class="combo-group-title"
-                            th:text="${type.name() == 'COMBO' ? '🍿 Combo' : '🥤 Đồ Lẻ'}">Group</h3>
+                        <div class="combo-group-header">
+                            <span class="combo-group-icon"
+                                  th:text="${type.name() == 'COMBO' ? '🍿' : '🥤'}">🍿</span>
+                            <h3 class="combo-group-title"
+                                th:text="${type.name() == 'COMBO' ? 'Combo tiết kiệm' : 'Đồ ăn & Thức uống'}">Group</h3>
+                        </div>
 
                         <div class="product-list">
                             <div class="product-card"
@@ -30,6 +34,9 @@
                                  th:if="${p.type == type}"
                                  th:data-id="${p.id}"
                                  th:data-price="${p.price}">
+                                <div class="product-icon-box">
+                                    <i th:class="${type.name() == 'COMBO' ? 'fa-solid fa-box-open' : 'fa-solid fa-mug-hot'}"></i>
+                                </div>
                                 <div class="product-info">
                                     <span class="product-name" th:text="${p.name}">Combo Solo</span>
                                     <span class="product-desc" th:if="${p.description != null}"
@@ -50,48 +57,64 @@
                         </div>
                     </div>
 
-                    <p class="combo-skip-hint">
+                    <div class="combo-skip-hint">
                         <i class="fa-solid fa-circle-info"></i>
                         Bạn có thể bỏ qua bước này nếu không cần thêm combo
-                    </p>
+                    </div>
                 </div>
 
                 <div class="order-summary">
-                    <h3 class="summary-title">Thông tin đặt vé</h3>
+                    <h3 class="summary-title">
+                        <i class="fa-solid fa-receipt"></i> Thông tin đặt vé
+                    </h3>
 
                     <div class="summary-movie">
                         <img th:if="${movie.posterUrl != null}" th:src="${movie.posterUrl}"
                              class="summary-poster" th:alt="${movie.title}" />
-                        <div>
+                        <div class="summary-movie-detail">
                             <span class="summary-movie-title" th:text="${movie.title}">Movie</span>
                             <span class="summary-showtime">
                                 <i class="fa-regular fa-clock"></i>
                                 <span th:text="${#dates.format(showtime.startTime, 'HH:mm')}">19:30</span>
                                 ~ <span th:text="${#dates.format(showtime.endTime, 'HH:mm')}">21:30</span>
-                                | <span th:text="${#dates.format(showtime.startTime, 'dd/MM/yyyy')}">20/05</span>
+                            </span>
+                            <span class="summary-showtime">
+                                <i class="fa-regular fa-calendar"></i>
+                                <span th:text="${#dates.format(showtime.startTime, 'dd/MM/yyyy')}">20/05</span>
                             </span>
                         </div>
                     </div>
 
-                    <div class="summary-details">
+                    <div class="summary-section">
+                        <div class="summary-section-title">
+                            <i class="fa-solid fa-chair"></i> Vé xem phim
+                        </div>
                         <div class="summary-row">
                             <span>Ghế</span>
-                            <span th:text="${seatNames}">A1, A2</span>
+                            <span class="fw-600" th:text="${seatNames}">A1, A2</span>
                         </div>
                         <div class="summary-row">
                             <span>Tiền vé</span>
-                            <span th:text="${#numbers.formatDecimal(ticketTotal, 0, 'COMMA', 0, 'POINT') + 'đ'}">100,000đ</span>
+                            <span class="fw-600" th:text="${#numbers.formatDecimal(ticketTotal, 0, 'COMMA', 0, 'POINT') + 'đ'}">100,000đ</span>
                         </div>
-                        <div class="summary-row" id="comboRow" style="display:none">
-                            <span>Combo/Bắp nước</span>
-                            <span id="comboTotalText">0đ</span>
+                    </div>
+
+                    <div class="summary-section" id="comboSummarySection" style="display:none">
+                        <div class="summary-section-title">
+                            <i class="fa-solid fa-popcorn"></i> Combo / Bắp nước
                         </div>
-                        <div class="summary-divider"></div>
-                        <div class="summary-row summary-grand-total">
-                            <span>Tổng cộng</span>
-                            <span id="grandTotalText"
-                                  th:text="${#numbers.formatDecimal(ticketTotal, 0, 'COMMA', 0, 'POINT') + 'đ'}">100,000đ</span>
+                        <div id="comboItemsList"></div>
+                        <div class="summary-row">
+                            <span>Tổng combo</span>
+                            <span class="fw-600" id="comboTotalText">0đ</span>
                         </div>
+                    </div>
+
+                    <div class="summary-divider"></div>
+                    <div class="summary-row summary-grand-total">
+                        <span>Tổng cộng</span>
+                        <span id="grandTotalText"
+                              th:text="${#numbers.formatDecimal(ticketTotal, 0, 'COMMA', 0, 'POINT') + 'đ'}">100,000đ</span>
                     </div>
 
                     <form th:action="@{/booking/checkout}" method="post" id="checkoutForm">
@@ -99,10 +122,15 @@
                         <input type="hidden" name="showtimeId" th:value="${showtime.id}" />
                         <input type="hidden" name="seatIds" th:value="${seatIdsCsv}" />
                         <div id="productInputs"></div>
-                        <button type="submit" class="btn-checkout">
-                            <i class="fa-solid fa-credit-card"></i> Thanh toán
+                        <button type="submit" class="btn-checkout" id="btnCheckout">
+                            <i class="fa-solid fa-lock"></i> Xác nhận thanh toán
                         </button>
                     </form>
+
+                    <div class="payment-note">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        Giao dịch được bảo mật bởi CineWave
+                    </div>
                 </div>
             </div>
         </div>

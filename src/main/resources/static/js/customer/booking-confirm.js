@@ -14,37 +14,55 @@ function changeQty(btn, delta) {
         return;
     }
     valueEl.textContent = qty;
+
+    if (qty > 0) {
+        card.classList.add('has-qty');
+    } else {
+        card.classList.remove('has-qty');
+    }
+
     updateOrderSummary();
 }
 
 function updateOrderSummary() {
     const cards = document.querySelectorAll('.product-card');
     const productInputs = document.getElementById('productInputs');
-    const comboRow = document.getElementById('comboRow');
+    const comboSection = document.getElementById('comboSummarySection');
+    const comboItemsList = document.getElementById('comboItemsList');
     const comboTotalText = document.getElementById('comboTotalText');
     const grandTotalText = document.getElementById('grandTotalText');
 
     let comboTotal = 0;
-    let html = '';
+    let inputsHtml = '';
+    let itemsHtml = '';
 
     cards.forEach(card => {
         const qty = parseInt(card.querySelector('.counter-value').textContent);
         if (qty > 0) {
             const id = card.dataset.id;
             const price = parseFloat(card.dataset.price);
-            comboTotal += price * qty;
-            html += `<input type="hidden" name="productIds" value="${id}" />`;
-            html += `<input type="hidden" name="quantities" value="${qty}" />`;
+            const name = card.querySelector('.product-name').textContent;
+            const lineTotal = price * qty;
+            comboTotal += lineTotal;
+
+            inputsHtml += '<input type="hidden" name="productIds" value="' + id + '" />';
+            inputsHtml += '<input type="hidden" name="quantities" value="' + qty + '" />';
+
+            itemsHtml += '<div class="summary-row combo-item-row">';
+            itemsHtml += '<span>' + name + ' <small>x' + qty + '</small></span>';
+            itemsHtml += '<span class="fw-600">' + formatCurrency(lineTotal) + '</span>';
+            itemsHtml += '</div>';
         }
     });
 
-    productInputs.innerHTML = html;
+    productInputs.innerHTML = inputsHtml;
+    comboItemsList.innerHTML = itemsHtml;
 
     if (comboTotal > 0) {
-        comboRow.style.display = 'flex';
+        comboSection.style.display = 'block';
         comboTotalText.textContent = formatCurrency(comboTotal);
     } else {
-        comboRow.style.display = 'none';
+        comboSection.style.display = 'none';
     }
 
     const grandTotal = parseFloat(TICKET_TOTAL) + comboTotal;

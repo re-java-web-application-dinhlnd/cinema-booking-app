@@ -9,72 +9,92 @@
     <link rel="stylesheet" th:href="@{/css/customer/seat-selection.css}" />
 
     <div class="seat-page">
-        <div class="seat-container">
+        <div class="booking-stepper">
+            <div class="step active"><span class="step-num">1</span><span class="step-label">Chọn ghế</span></div>
+            <div class="step-line"></div>
+            <div class="step"><span class="step-num">2</span><span class="step-label">Combo</span></div>
+            <div class="step-line"></div>
+            <div class="step"><span class="step-num">3</span><span class="step-label">Thanh toán</span></div>
+        </div>
 
-            <div class="seat-header">
-                <a th:href="@{/movies/{id}(id=${movie.id})}" class="btn-back">
-                    <i class="fa-solid fa-arrow-left"></i>
-                </a>
-                <div class="seat-header-info">
-                    <h1 class="seat-header-title" th:text="${movie.title}">Movie</h1>
-                    <div class="seat-header-meta">
-                        <span>
-                            <i class="fa-regular fa-clock"></i>
-                            <span th:text="${#dates.format(showtime.startTime, 'HH:mm')}">19:30</span>
-                            <span> ~ </span>
-                            <span th:text="${#dates.format(showtime.endTime, 'HH:mm')}">21:30</span>
-                        </span>
-                        <span>
-                            <i class="fa-regular fa-calendar"></i>
-                            <span th:text="${#dates.format(showtime.startTime, 'dd/MM/yyyy')}">20/05/2026</span>
-                        </span>
+        <div class="seat-layout">
+            <div class="seat-main">
+                <div class="seat-map-area">
+                    <div class="screen-wrapper">
+                        <div class="screen-curve"></div>
+                        <span class="screen-text">MÀN HÌNH</span>
+                    </div>
+
+                    <div class="seat-grid" id="seatGrid"></div>
+
+                    <div class="seat-legend">
+                        <div class="legend-item">
+                            <span class="legend-box standard"></span> Thường
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-box vip"></span> VIP
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-box sweetbox"></span> Sweetbox
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-box selected"></span> Đang chọn
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-box booked"></span> Đã đặt
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="seat-map-area">
-                <div class="screen-bar">
-                    <span>MÀN HÌNH</span>
+            <div class="seat-sidebar">
+                <div class="sidebar-movie">
+                    <img th:if="${movie.posterUrl != null}" th:src="${movie.posterUrl}"
+                         class="sidebar-poster" th:alt="${movie.title}" />
+                    <div class="sidebar-movie-info">
+                        <h2 class="sidebar-movie-title" th:text="${movie.title}">Movie</h2>
+                        <div class="sidebar-meta">
+                            <span><i class="fa-regular fa-clock"></i>
+                                <span th:text="${#dates.format(showtime.startTime, 'HH:mm')}">19:30</span>
+                                ~ <span th:text="${#dates.format(showtime.endTime, 'HH:mm')}">21:30</span>
+                            </span>
+                            <span><i class="fa-regular fa-calendar"></i>
+                                <span th:text="${#dates.format(showtime.startTime, 'dd/MM/yyyy')}">20/05</span>
+                            </span>
+                        </div>
+                        <div class="sidebar-price-info">
+                            <span class="price-tag standard-tag">
+                                Thường: <strong th:text="${#numbers.formatDecimal(ticketPrice, 0, 'COMMA', 0, 'POINT') + 'đ'}">75,000đ</strong>
+                            </span>
+                            <span class="price-tag vip-tag">
+                                VIP: <strong th:text="${#numbers.formatDecimal(ticketPrice * 1.3, 0, 'COMMA', 0, 'POINT') + 'đ'}">97,500đ</strong>
+                            </span>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="seat-grid" id="seatGrid">
-                    <!-- JS renders seats -->
+                <div class="sidebar-selection" id="sidebarSelection">
+                    <div class="selection-empty" id="selectionEmpty">
+                        <i class="fa-regular fa-hand-pointer"></i>
+                        <p>Chọn ghế trên sơ đồ</p>
+                    </div>
+                    <div class="selection-detail" id="selectionDetail" style="display:none">
+                        <div class="detail-row">
+                            <span class="detail-label">Ghế</span>
+                            <span class="detail-value" id="selectedSeatsText">-</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Số lượng</span>
+                            <span class="detail-value" id="selectedCount">0</span>
+                        </div>
+                        <div class="detail-divider"></div>
+                        <div class="detail-row detail-total">
+                            <span class="detail-label">Tạm tính</span>
+                            <span class="detail-value" id="totalPrice">0đ</span>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="seat-legend">
-                    <div class="legend-item">
-                        <span class="legend-box standard"></span> Thường
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-box vip"></span> VIP
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-box sweetbox"></span> Sweetbox
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-box selected"></span> Đang chọn
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-box booked"></span> Đã đặt
-                    </div>
-                </div>
-            </div>
-
-            <div class="booking-summary" id="bookingSummary" style="display:none">
-                <div class="summary-content">
-                    <div class="summary-row">
-                        <span class="summary-label">Ghế đã chọn:</span>
-                        <span class="summary-value" id="selectedSeatsText">-</span>
-                    </div>
-                    <div class="summary-row">
-                        <span class="summary-label">Số lượng:</span>
-                        <span class="summary-value" id="selectedCount">0</span>
-                    </div>
-                    <div class="summary-row summary-total">
-                        <span class="summary-label">Tạm tính:</span>
-                        <span class="summary-value" id="totalPrice">0đ</span>
-                    </div>
-                </div>
                 <form th:action="@{/booking/confirm}" method="post" id="bookingForm">
                     <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                     <input type="hidden" name="showtimeId" th:value="${showtime.id}" />
