@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/admin-layout :: layout('Quản lý Suất chiếu', ~{::pageContent})}">
+<body>
+<th:block th:fragment="pageContent">
+    <link rel="stylesheet" th:href="@{/css/admin/movies.css}"/>
+    <link rel="stylesheet" th:href="@{/css/admin/showtimes.css}"/>
+
+    <div class="page-header">
+        <h1><i class="fa-solid fa-calendar-days"></i> Quản lý Suất chiếu</h1>
+        <a th:href="@{/admin/showtimes/create}" class="btn-add">
+            <i class="fa-solid fa-plus"></i> Thêm suất chiếu
+        </a>
+    </div>
+
+    <!-- Toast messages -->
+    <div th:if="${successMessage}" class="toast-auto" data-type="success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="toast-auto" data-type="error" th:text="${errorMessage}"></div>
+
+    <!-- Filter Bar -->
+    <form th:action="@{/admin/showtimes}" method="get" class="filter-bar">
+        <select name="movieId">
+            <option value="">Tất cả phim</option>
+            <option th:each="m : ${movies}" th:value="${m.id}" th:text="${m.title}"
+                    th:selected="${m.id == selectedMovieId}"></option>
+        </select>
+        <select name="roomId">
+            <option value="">Tất cả phòng</option>
+            <option th:each="r : ${rooms}" th:value="${r.id}" th:text="${r.name}"
+                    th:selected="${r.id == selectedRoomId}"></option>
+        </select>
+        <select name="status">
+            <option value="">Tất cả trạng thái</option>
+            <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}"
+                    th:selected="${s.name() == selectedStatus}"></option>
+        </select>
+        <button type="submit" class="btn-filter">
+            <i class="fa-solid fa-search"></i> Lọc
+        </button>
+    </form>
+
+    <!-- Showtime Table -->
+    <div th:if="${showtimes.totalElements > 0}">
+        <table class="showtime-table">
+            <thead>
+            <tr>
+                <th>Phim</th>
+                <th>Phòng</th>
+                <th>Ngày chiếu</th>
+                <th>Giờ chiếu</th>
+                <th>Giá vé</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="st : ${showtimes.content}">
+                <td>
+                    <div class="showtime-movie-info">
+                        <img th:if="${st.movie.posterUrl != null}" th:src="${st.movie.posterUrl}"
+                             alt="poster" class="showtime-poster"/>
+                        <div th:if="${st.movie.posterUrl == null}" class="showtime-poster showtime-poster-empty">
+                            <i class="fa-solid fa-image"></i>
+                        </div>
+                        <span class="showtime-movie-title" th:text="${st.movie.title}"></span>
+                    </div>
+                </td>
+                <td>
+                    <span class="room-badge" th:text="${st.room.name}"></span>
+                </td>
+                <td th:text="${#temporals.format(st.startTime.toLocalDateTime(), 'dd/MM/yyyy')}"></td>
+                <td>
+                    <span class="time-range">
+                        <span th:text="${#temporals.format(st.startTime.toLocalDateTime(), 'HH:mm')}"></span>
+                        <span class="time-sep">→</span>
+                        <span th:text="${#temporals.format(st.endTime.toLocalDateTime(), 'HH:mm')}"></span>
+                    </span>
+                </td>
+                <td>
+                    <span class="price-tag" th:text="${#numbers.formatInteger(st.ticketPrice.longValue(), 3, 'POINT') + 'đ'}"></span>
+                </td>
+                <td>
+                    <span class="status-badge"
+                          th:classappend="'status-' + ${st.status}"
+                          th:text="${st.status == T(com.re.cinemabookingapp.enums.ShowtimeStatus).ACTIVE ? 'Hoạt động' : 'Đã ẩn'}"></span>
+                </td>
+                <td>
+                    <div class="action-btns">
+                        <a th:href="@{/admin/showtimes/{id}/edit(id=${st.id})}" class="btn-edit">
+                            <i class="fa-solid fa-pen"></i> Sửa
+                        </a>
+                        <form th:action="@{/admin/showtimes/{id}/hide(id=${st.id})}"
+                              method="post" class="inline-form"
+                              data-confirm="Bạn chắc chắn muốn ẩn suất chiếu này?">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <button type="submit" class="btn-delete">
+                                <i class="fa-solid fa-eye-slash"></i> Ẩn
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div class="pagination" th:if="${showtimes.totalPages > 1}">
+            <a th:if="${showtimes.number > 0}"
+               th:href="@{/admin/showtimes(movieId=${selectedMovieId}, roomId=${selectedRoomId}, status=${selectedStatus}, page=${showtimes.number - 1})}">
+                &laquo; Trước
+            </a>
+            <th:block th:each="i : ${#numbers.sequence(0, showtimes.totalPages - 1)}">
+                <span th:if="${i == showtimes.number}" class="active" th:text="${i + 1}"></span>
+                <a th:if="${i != showtimes.number}"
+                   th:href="@{/admin/showtimes(movieId=${selectedMovieId}, roomId=${selectedRoomId}, status=${selectedStatus}, page=${i})}"
+                   th:text="${i + 1}"></a>
+            </th:block>
+            <a th:if="${showtimes.number < showtimes.totalPages - 1}"
+               th:href="@{/admin/showtimes(movieId=${selectedMovieId}, roomId=${selectedRoomId}, status=${selectedStatus}, page=${showtimes.number + 1})}">
+                Sau &raquo;
+            </a>
+        </div>
+    </div>
+
+    <!-- Empty State -->
+    <div th:if="${showtimes.totalElements == 0}" class="empty-state">
+        <i class="fa-solid fa-calendar-days"></i>
+        <p>Chưa có suất chiếu nào.</p>
+    </div>
+
+    <!-- Confirm Modal for Hide -->
+    <div id="hideConfirmModal" class="confirm-overlay">
+        <div class="confirm-box">
+            <div class="confirm-icon">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="confirm-title">Xác nhận Ẩn Suất chiếu</h3>
+            <p class="confirm-desc" id="hideConfirmDesc">Bạn chắc chắn muốn ẩn suất chiếu này?</p>
+            <div class="confirm-actions">
+                <button type="button" class="confirm-btn cancel" onclick="hideHideConfirm()">Huỷ</button>
+                <button type="button" class="confirm-btn danger" onclick="submitHideForm()">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+
+    <script th:src="@{/js/admin/showtime-list.js}"></script>
+</th:block>
+</body>
+</html>

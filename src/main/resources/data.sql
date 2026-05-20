@@ -98,23 +98,87 @@ INSERT IGNORE INTO movies (tmdb_id, title, description, duration_minutes, releas
 (299534, 'Avengers: Endgame', 'Sau những sự kiện tàn khốc trong Avengers: Infinity War, vũ trụ đã chìm trong đống đổ nát. Với sự giúp đỡ của các đồng minh còn lại, Avengers tập hợp lại một lần nữa để đảo ngược hành động của Thanos và khôi phục lại trật tự cho vũ trụ.', 181, '2019-04-24', 'https://image.tmdb.org/t/p/w500/or06FN3Dka5tukK1e9sl16pB3iy.jpg', 'https://www.youtube.com/watch?v=TcMBFSGVi1c', 8.3, 'ACTIVE', NOW(), NOW()),
 (27205, 'Inception', 'Một tên trộm lành nghề, chuyên trộm cắp bí mật của doanh nghiệp thông qua việc sử dụng công nghệ chia sẻ giấc mơ, được giao nhiệm vụ ngược lại là gieo rắc một ý tưởng vào tâm trí của một C.E.O.', 148, '2010-07-15', 'https://image.tmdb.org/t/p/w500/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg', 'https://www.youtube.com/watch?v=YoHD9XEInc0', 8.4, 'ACTIVE', NOW(), NOW()),
 (76600, 'Avatar: The Way of Water', 'Lấy bối cảnh hơn một thập kỷ sau các sự kiện của bộ phim đầu tiên, hãy tìm hiểu câu chuyện về gia đình Sully (Jake, Neytiri và các con của họ), những rắc rối theo sau họ, và những gì họ phải làm để giữ an toàn cho nhau.', 192, '2022-12-14', 'https://image.tmdb.org/t/p/w500/8Y7Wr8slNUkI8Knv6XzIuYcEaC6.jpg', 'https://www.youtube.com/watch?v=d9MyW72ELq0', 7.6, 'ACTIVE', NOW(), NOW()),
-(155, 'The Dark Knight', 'Batman nâng cao mức độ chống tội phạm của mình. Với sự giúp đỡ của Trung úy Jim Gordon và Luật sư Quận Harvey Dent, Batman bắt đầu phá hủy các tổ chức tội phạm còn lại đe dọa thành phố.', 152, '2008-07-16', 'https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg', 'https://www.youtube.com/watch?v=EXeTwQWrcwY', 8.5, 'COMING_SOON', NOW(), NOW());
+(155, 'The Dark Knight', 'Batman nâng cao mức độ chống tội phạm của mình. Với sự giúp đỡ của Trung úy Jim Gordon và Luật sư Quận Harvey Dent, Batman bắt đầu phá hủy các tổ chức tội phạm còn lại đe dọa thành phố.', 152, '2008-07-16', 'https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg', 'https://www.youtube.com/watch?v=EXeTwQWrcwY', 8.5, 'ACTIVE', NOW(), NOW()),
+(634649, 'Spider-Man: No Way Home', 'Peter Parker cần sự giúp đỡ của Doctor Strange khi danh tính của anh bị lộ. Khi một phép thuật bị sai lệch, những kẻ thù nguy hiểm nhất từ các vũ trụ khác bắt đầu xuất hiện.', 148, '2021-12-15', 'https://image.tmdb.org/t/p/w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg', 'https://www.youtube.com/watch?v=JfVOs4VSpmA', 8.0, 'ACTIVE', NOW(), NOW()),
+(693134, 'Dune: Part Two', 'Paul Atreides hợp nhất với người Fremen trong cuộc hành trình trả thù chống lại những kẻ đã phá hủy gia đình anh. Đối mặt với sự lựa chọn giữa tình yêu và số phận của vũ trụ.', 166, '2024-02-27', 'https://image.tmdb.org/t/p/w500/czembW0Rk1Ke7lCJGahbOhdCuhV.jpg', 'https://www.youtube.com/watch?v=Way9Dexny3w', 8.2, 'ACTIVE', NOW(), NOW()),
+(872585, 'Oppenheimer', 'Câu chuyện về nhà vật lý J. Robert Oppenheimer và vai trò của ông trong việc phát triển bom nguyên tử. Bộ phim khám phá cuộc đời, tình yêu và hậu quả từ phát minh thay đổi thế giới.', 180, '2023-07-19', 'https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg', 'https://www.youtube.com/watch?v=uYPbbksJxIg', 8.1, 'ACTIVE', NOW(), NOW()),
+(1022789, 'Inside Out 2', 'Riley bước vào tuổi dậy thì và trụ sở cảm xúc trong tâm trí cô bé phải đối mặt với những cảm xúc mới: Lo Âu, Ghen Tị, Chán Nản và Xấu Hổ. Niềm Vui, Buồn Bã và các cảm xúc cũ phải tìm cách thích nghi.', 100, '2024-06-11', 'https://image.tmdb.org/t/p/w500/vpnVM9B6NMmQpWeZvzLvDESb2QY.jpg', 'https://www.youtube.com/watch?v=LEjhY15eCx0', 7.6, 'ACTIVE', NOW(), NOW()),
+(533535, 'Deadpool & Wolverine', 'Deadpool kéo Wolverine miễn cưỡng vào một sứ mệnh cùng nhau. Cặp đôi bất đắc dĩ phải hợp tác để đối mặt với kẻ thù chung trong một cuộc phiêu lưu xuyên đa vũ trụ.', 128, '2024-07-24', 'https://image.tmdb.org/t/p/w500/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg', 'https://www.youtube.com/watch?v=73_1biulkYk', 7.7, 'ACTIVE', NOW(), NOW()),
+(496243, 'Parasite', 'Gia đình Ki-taek nghèo khổ dần len lỏi vào gia đình Park giàu có bằng cách lần lượt trở thành gia sư, quản gia và tài xế. Mọi thứ đổ vỡ khi một bí mật kinh hoàng bị phát hiện.', 132, '2019-05-30', 'https://image.tmdb.org/t/p/w500/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg', 'https://www.youtube.com/watch?v=5xH0HfJHsaY', 8.5, 'COMING_SOON', NOW(), NOW());
 
 -- 7. MOVIE_GENRES (Mapping phim và thể loại)
--- Thể loại trong DB: 28(Hành Động), 12(Phiêu Lưu), 878(Khoa Học Viễn Tưởng), 18(Chính Kịch), 10751(Gia Đình)
 INSERT IGNORE INTO movie_genres (movie_id, genre_id) VALUES
+-- Avengers: Endgame (Hành Động, Phiêu Lưu, Khoa Học Viễn Tưởng)
 ((SELECT id FROM movies WHERE tmdb_id = 299534), (SELECT id FROM genres WHERE tmdb_id = 28)),
 ((SELECT id FROM movies WHERE tmdb_id = 299534), (SELECT id FROM genres WHERE tmdb_id = 12)),
 ((SELECT id FROM movies WHERE tmdb_id = 299534), (SELECT id FROM genres WHERE tmdb_id = 878)),
-
+-- Inception (Hành Động, Khoa Học Viễn Tưởng, Phiêu Lưu)
 ((SELECT id FROM movies WHERE tmdb_id = 27205), (SELECT id FROM genres WHERE tmdb_id = 28)),
 ((SELECT id FROM movies WHERE tmdb_id = 27205), (SELECT id FROM genres WHERE tmdb_id = 878)),
 ((SELECT id FROM movies WHERE tmdb_id = 27205), (SELECT id FROM genres WHERE tmdb_id = 12)),
-
+-- Avatar 2 (Khoa Học Viễn Tưởng, Hành Động, Phiêu Lưu)
 ((SELECT id FROM movies WHERE tmdb_id = 76600), (SELECT id FROM genres WHERE tmdb_id = 878)),
 ((SELECT id FROM movies WHERE tmdb_id = 76600), (SELECT id FROM genres WHERE tmdb_id = 28)),
 ((SELECT id FROM movies WHERE tmdb_id = 76600), (SELECT id FROM genres WHERE tmdb_id = 12)),
-
+-- The Dark Knight (Chính Kịch, Hành Động, Hình Sự)
 ((SELECT id FROM movies WHERE tmdb_id = 155), (SELECT id FROM genres WHERE tmdb_id = 18)),
 ((SELECT id FROM movies WHERE tmdb_id = 155), (SELECT id FROM genres WHERE tmdb_id = 28)),
-((SELECT id FROM movies WHERE tmdb_id = 155), (SELECT id FROM genres WHERE tmdb_id = 80));
+((SELECT id FROM movies WHERE tmdb_id = 155), (SELECT id FROM genres WHERE tmdb_id = 80)),
+-- Spider-Man: No Way Home (Hành Động, Phiêu Lưu, Khoa Học Viễn Tưởng)
+((SELECT id FROM movies WHERE tmdb_id = 634649), (SELECT id FROM genres WHERE tmdb_id = 28)),
+((SELECT id FROM movies WHERE tmdb_id = 634649), (SELECT id FROM genres WHERE tmdb_id = 12)),
+((SELECT id FROM movies WHERE tmdb_id = 634649), (SELECT id FROM genres WHERE tmdb_id = 878)),
+-- Dune: Part Two (Khoa Học Viễn Tưởng, Phiêu Lưu)
+((SELECT id FROM movies WHERE tmdb_id = 693134), (SELECT id FROM genres WHERE tmdb_id = 878)),
+((SELECT id FROM movies WHERE tmdb_id = 693134), (SELECT id FROM genres WHERE tmdb_id = 12)),
+-- Oppenheimer (Chính Kịch, Lịch Sử)
+((SELECT id FROM movies WHERE tmdb_id = 872585), (SELECT id FROM genres WHERE tmdb_id = 18)),
+((SELECT id FROM movies WHERE tmdb_id = 872585), (SELECT id FROM genres WHERE tmdb_id = 36)),
+-- Inside Out 2 (Hoạt Hình, Gia Đình, Hài)
+((SELECT id FROM movies WHERE tmdb_id = 1022789), (SELECT id FROM genres WHERE tmdb_id = 16)),
+((SELECT id FROM movies WHERE tmdb_id = 1022789), (SELECT id FROM genres WHERE tmdb_id = 10751)),
+((SELECT id FROM movies WHERE tmdb_id = 1022789), (SELECT id FROM genres WHERE tmdb_id = 35)),
+-- Deadpool & Wolverine (Hành Động, Hài, Khoa Học Viễn Tưởng)
+((SELECT id FROM movies WHERE tmdb_id = 533535), (SELECT id FROM genres WHERE tmdb_id = 28)),
+((SELECT id FROM movies WHERE tmdb_id = 533535), (SELECT id FROM genres WHERE tmdb_id = 35)),
+((SELECT id FROM movies WHERE tmdb_id = 533535), (SELECT id FROM genres WHERE tmdb_id = 878)),
+-- Parasite (Giật Gân, Hài, Chính Kịch)
+((SELECT id FROM movies WHERE tmdb_id = 496243), (SELECT id FROM genres WHERE tmdb_id = 53)),
+((SELECT id FROM movies WHERE tmdb_id = 496243), (SELECT id FROM genres WHERE tmdb_id = 35)),
+((SELECT id FROM movies WHERE tmdb_id = 496243), (SELECT id FROM genres WHERE tmdb_id = 18));
+
+-- 8. SHOWTIMES (Suất chiếu mẫu — ngày 20-22/05/2026)
+INSERT IGNORE INTO showtimes (movie_id, room_id, start_time, end_time, ticket_price, status, created_at) VALUES
+-- Phòng 1: Avengers, Inception, Spider-Man (20/05)
+((SELECT id FROM movies WHERE tmdb_id = 299534), (SELECT id FROM rooms WHERE name='Phòng 1'), '2026-05-20 09:00:00', '2026-05-20 12:16:00', 75000, 'ACTIVE', NOW()),
+((SELECT id FROM movies WHERE tmdb_id = 27205), (SELECT id FROM rooms WHERE name='Phòng 1'), '2026-05-20 13:00:00', '2026-05-20 15:43:00', 65000, 'ACTIVE', NOW()),
+((SELECT id FROM movies WHERE tmdb_id = 634649), (SELECT id FROM rooms WHERE name='Phòng 1'), '2026-05-20 16:00:00', '2026-05-20 18:43:00', 70000, 'ACTIVE', NOW()),
+((SELECT id FROM movies WHERE tmdb_id = 299534), (SELECT id FROM rooms WHERE name='Phòng 1'), '2026-05-20 19:30:00', '2026-05-20 22:46:00', 85000, 'ACTIVE', NOW()),
+
+-- Phòng 2: Dune 2, Oppenheimer, Dark Knight (20/05)
+((SELECT id FROM movies WHERE tmdb_id = 693134), (SELECT id FROM rooms WHERE name='Phòng 2'), '2026-05-20 09:30:00', '2026-05-20 12:31:00', 80000, 'ACTIVE', NOW()),
+((SELECT id FROM movies WHERE tmdb_id = 872585), (SELECT id FROM rooms WHERE name='Phòng 2'), '2026-05-20 13:00:00', '2026-05-20 16:15:00', 75000, 'ACTIVE', NOW()),
+((SELECT id FROM movies WHERE tmdb_id = 155), (SELECT id FROM rooms WHERE name='Phòng 2'), '2026-05-20 17:00:00', '2026-05-20 19:47:00', 70000, 'ACTIVE', NOW()),
+((SELECT id FROM movies WHERE tmdb_id = 693134), (SELECT id FROM rooms WHERE name='Phòng 2'), '2026-05-20 20:30:00', '2026-05-20 23:31:00', 90000, 'ACTIVE', NOW()),
+
+-- Phòng 3: Inside Out 2, Deadpool, Avatar 2 (20/05)
+((SELECT id FROM movies WHERE tmdb_id = 1022789), (SELECT id FROM rooms WHERE name='Phòng 3'), '2026-05-20 09:00:00', '2026-05-20 10:55:00', 55000, 'ACTIVE', NOW()),
+((SELECT id FROM movies WHERE tmdb_id = 533535), (SELECT id FROM rooms WHERE name='Phòng 3'), '2026-05-20 11:30:00', '2026-05-20 13:53:00', 70000, 'ACTIVE', NOW()),
+((SELECT id FROM movies WHERE tmdb_id = 76600), (SELECT id FROM rooms WHERE name='Phòng 3'), '2026-05-20 14:30:00', '2026-05-20 17:57:00', 80000, 'ACTIVE', NOW()),
+((SELECT id FROM movies WHERE tmdb_id = 1022789), (SELECT id FROM rooms WHERE name='Phòng 3'), '2026-05-20 18:30:00', '2026-05-20 20:25:00', 60000, 'ACTIVE', NOW()),
+
+-- 21/05 — Phòng 1
+((SELECT id FROM movies WHERE tmdb_id = 27205), (SELECT id FROM rooms WHERE name='Phòng 1'), '2026-05-21 10:00:00', '2026-05-21 12:43:00', 65000, 'ACTIVE', NOW()),
+((SELECT id FROM movies WHERE tmdb_id = 634649), (SELECT id FROM rooms WHERE name='Phòng 1'), '2026-05-21 14:00:00', '2026-05-21 16:43:00', 70000, 'ACTIVE', NOW()),
+((SELECT id FROM movies WHERE tmdb_id = 533535), (SELECT id FROM rooms WHERE name='Phòng 1'), '2026-05-21 19:00:00', '2026-05-21 21:23:00', 75000, 'ACTIVE', NOW()),
+
+-- 21/05 — Phòng 2
+((SELECT id FROM movies WHERE tmdb_id = 872585), (SELECT id FROM rooms WHERE name='Phòng 2'), '2026-05-21 09:00:00', '2026-05-21 12:15:00', 75000, 'ACTIVE', NOW()),
+((SELECT id FROM movies WHERE tmdb_id = 299534), (SELECT id FROM rooms WHERE name='Phòng 2'), '2026-05-21 13:00:00', '2026-05-21 16:16:00', 80000, 'ACTIVE', NOW()),
+((SELECT id FROM movies WHERE tmdb_id = 155), (SELECT id FROM rooms WHERE name='Phòng 2'), '2026-05-21 19:30:00', '2026-05-21 22:17:00', 85000, 'ACTIVE', NOW()),
+
+-- 22/05 — Phòng 3
+((SELECT id FROM movies WHERE tmdb_id = 76600), (SELECT id FROM rooms WHERE name='Phòng 3'), '2026-05-22 10:00:00', '2026-05-22 13:27:00', 80000, 'ACTIVE', NOW()),
+((SELECT id FROM movies WHERE tmdb_id = 1022789), (SELECT id FROM rooms WHERE name='Phòng 3'), '2026-05-22 14:00:00', '2026-05-22 15:55:00', 55000, 'ACTIVE', NOW()),
+((SELECT id FROM movies WHERE tmdb_id = 693134), (SELECT id FROM rooms WHERE name='Phòng 3'), '2026-05-22 16:30:00', '2026-05-22 19:31:00', 85000, 'ACTIVE', NOW()),
+((SELECT id FROM movies WHERE tmdb_id = 533535), (SELECT id FROM rooms WHERE name='Phòng 3'), '2026-05-22 20:00:00', '2026-05-22 22:23:00', 75000, 'ACTIVE', NOW());

@@ -4,9 +4,12 @@ const $ = (id) => document.getElementById(id);
 const $$ = (selector) => document.querySelectorAll(selector);
 
 // === TOAST ===
-function showToast(message, isSuccess) {
+function showToast(message, type) {
     const container = $('toastContainer');
     if (!container) return;
+
+    // Support both boolean (true = success) and string ('success'/'error')
+    const isSuccess = type === true || type === 'success';
 
     const toast = document.createElement('div');
     toast.className = `cw-toast ${isSuccess ? 'success' : 'error'}`;

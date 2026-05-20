@@ -45,11 +45,16 @@ public class ShowtimeServiceImpl implements ShowtimeService {
         Room room = roomRepository.findById(dto.getRoomId())
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy phòng chiếu với ID: " + dto.getRoomId()));
 
-        // 2. Tính startTime và endTime
+        // 2. Validate: không cho chọn ngày quá khứ
+        if (dto.getStartTime().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Không thể tạo suất chiếu trong quá khứ!");
+        }
+
+        // 3. Tính startTime và endTime
         Timestamp startTime = Timestamp.valueOf(dto.getStartTime());
         Timestamp endTime = calculateEndTime(dto.getStartTime(), movie.getDurationMinutes());
 
-        // 3. Kiểm tra xung đột phòng
+        // 4. Kiểm tra xung đột phòng
         validateNoConflict(room.getId(), null, startTime, endTime);
 
         // 4. Map DTO → Entity bằng MapStruct + set các field cần logic
@@ -72,11 +77,16 @@ public class ShowtimeServiceImpl implements ShowtimeService {
     public Showtime update(Long id, ShowtimeUpdateDto dto) {
         Showtime showtime = getById(id);
 
-        // 1. Tính lại endTime mới
+        // 1. Validate: không cho chọn ngày quá khứ
+        if (dto.getStartTime().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Không thể chuyển suất chiếu sang thời gian trong quá khứ!");
+        }
+
+        // 2. Tính lại endTime mới
         Timestamp newStartTime = Timestamp.valueOf(dto.getStartTime());
         Timestamp newEndTime = calculateEndTime(dto.getStartTime(), showtime.getMovie().getDurationMinutes());
 
-        // 2. Kiểm tra xung đột (loại trừ chính nó)
+        // 3. Kiểm tra xung đột (loại trừ chính nó)
         validateNoConflict(showtime.getRoom().getId(), id, newStartTime, newEndTime);
 
         // 3. Cập nhật các field

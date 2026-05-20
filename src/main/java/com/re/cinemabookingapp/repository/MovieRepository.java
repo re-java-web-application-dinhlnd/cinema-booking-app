@@ -23,6 +23,9 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
 
     Page<Movie> findByStatus(MovieStatus status, Pageable pageable);
 
+    /** Lấy danh sách phim theo nhiều trạng thái (cho dropdown chọn phim) */
+    List<Movie> findByStatusIn(List<MovieStatus> statuses);
+
     @Query("SELECT m FROM Movie m WHERE " +
            "(:keyword IS NULL OR LOWER(m.title) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +
            "AND (:status IS NULL OR m.status = :status)")

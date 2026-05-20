@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/admin-layout :: layout(${isEdit} ? 'Sửa Suất chiếu' : 'Tạo Suất chiếu', ~{::pageContent})}">
+<body>
+<th:block th:fragment="pageContent">
+    <link rel="stylesheet" th:href="@{/css/admin/movies.css}"/>
+    <link rel="stylesheet" th:href="@{/css/admin/showtime-form.css}"/>
+
+    <!-- Toast for backend business errors (conflict, past date...) -->
+    <div th:if="${successMessage}" class="toast-auto" data-type="success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="toast-auto" data-type="error" th:text="${errorMessage}"></div>
+
+    <div class="showtime-form-container">
+        <div class="form-header">
+            <h2>
+                <i th:class="${isEdit} ? 'fa-solid fa-pen-to-square' : 'fa-solid fa-calendar-plus'"></i>
+                <span th:text="${isEdit} ? 'Chỉnh sửa suất chiếu' : 'Tạo suất chiếu mới'"></span>
+            </h2>
+            <a th:href="@{/admin/showtimes}" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Quay lại</a>
+        </div>
+
+        <div class="form-card">
+            <!-- ========== CREATE FORM ========== -->
+            <form th:unless="${isEdit}" id="showtimeForm" th:action="@{/admin/showtimes/create}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <input type="hidden" id="startTime" name="startTime" />
+
+                <div class="form-group">
+                    <label for="movieId">Chọn phim <span class="required">*</span></label>
+                    <select id="movieId" name="movieId" class="form-control">
+                        <option value="">-- Chọn phim --</option>
+                        <option th:each="m : ${movies}" th:value="${m.id}" th:text="${m.title}"
+                                th:attr="data-duration=${m.durationMinutes}"></option>
+                    </select>
+                    <span class="field-error" id="err-movieId" th:if="${fieldErrors != null and fieldErrors.containsKey('movieId')}" th:text="${fieldErrors.get('movieId')}"></span>
+                    <span class="field-error" id="err-movieId" th:unless="${fieldErrors != null and fieldErrors.containsKey('movieId')}"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="roomId">Chọn phòng chiếu <span class="required">*</span></label>
+                    <select id="roomId" name="roomId" class="form-control">
+                        <option value="">-- Chọn phòng --</option>
+                        <option th:each="r : ${rooms}" th:value="${r.id}"
+                                th:text="${r.name + ' (' + r.totalSeats + ' ghế)'}"></option>
+                    </select>
+                    <span class="field-error" id="err-roomId" th:if="${fieldErrors != null and fieldErrors.containsKey('roomId')}" th:text="${fieldErrors.get('roomId')}"></span>
+                    <span class="field-error" id="err-roomId" th:unless="${fieldErrors != null and fieldErrors.containsKey('roomId')}"></span>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="showDate">Ngày chiếu <span class="required">*</span></label>
+                        <input type="date" id="showDate" class="form-control" />
+                        <span class="field-error" id="err-showDate" th:if="${fieldErrors != null and fieldErrors.containsKey('startTime')}" th:text="${fieldErrors.get('startTime')}"></span>
+                        <span class="field-error" id="err-showDate" th:unless="${fieldErrors != null and fieldErrors.containsKey('startTime')}"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="showTime">Giờ bắt đầu <span class="required">*</span></label>
+                        <input type="time" id="showTime" class="form-control" />
+                        <span class="field-error" id="err-showTime"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="ticketPrice">Giá vé (VNĐ) <span class="required">*</span></label>
+                    <input type="number" id="ticketPrice" name="ticketPrice" class="form-control"
+                           placeholder="VD: 75000" />
+                    <span class="field-error" id="err-ticketPrice" th:if="${fieldErrors != null and fieldErrors.containsKey('ticketPrice')}" th:text="${fieldErrors.get('ticketPrice')}"></span>
+                    <span class="field-error" id="err-ticketPrice" th:unless="${fieldErrors != null and fieldErrors.containsKey('ticketPrice')}"></span>
+                </div>
+
+                <!-- Lịch phòng ngày đã chọn -->
+                <div id="roomSchedule" class="room-schedule hidden">
+                    <div class="room-schedule-title">
+                        <i class="fa-solid fa-clock"></i> Lịch phòng ngày đã chọn
+                    </div>
+                    <div id="roomScheduleContent" class="room-schedule-content">
+                        <p class="room-schedule-empty">Không có suất chiếu nào.</p>
+                    </div>
+                </div>
+
+                <!-- Auto-calculated info -->
+                <div id="calcInfo" class="calc-info hidden">
+                    <div class="calc-info-title"><i class="fa-solid fa-calculator"></i> Thông tin tự tính</div>
+                    <div class="calc-info-row">
+                        <span>Thời lượng phim:</span>
+                        <strong id="calcDuration">—</strong>
+                    </div>
+                    <div class="calc-info-row">
+                        <span>Thời gian dọn phòng:</span>
+                        <strong>15 phút</strong>
+                    </div>
+                    <div class="calc-info-row">
+                        <span>Giờ kết thúc dự kiến:</span>
+                        <strong id="calcEndTime">—</strong>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <a th:href="@{/admin/showtimes}" class="btn-cancel">Hủy bỏ</a>
+                    <button type="button" class="btn-save" onclick="showConfirm()">
+                        <i class="fa-solid fa-calendar-plus"></i> Tạo suất chiếu
+                    </button>
+                </div>
+            </form>
+
+            <!-- ========== EDIT FORM ========== -->
+            <form th:if="${isEdit}" id="showtimeForm" th:action="@{/admin/showtimes/{id}/edit(id=${showtime.id})}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                <input type="hidden" id="startTime" name="startTime" />
+
+                <div class="form-group">
+                    <label>Phim</label>
+                    <input type="text" class="form-control" th:value="${showtime.movie.title}" disabled />
+                </div>
+
+                <div class="form-group">
+                    <label>Phòng chiếu</label>
+                    <input type="text" class="form-control" th:value="${showtime.room.name}" disabled />
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="showDate">Ngày chiếu <span class="required">*</span></label>
+                        <input type="date" id="showDate" class="form-control"
+                               th:value="${#temporals.format(showtime.startTime.toLocalDateTime(), 'yyyy-MM-dd')}" />
+                        <span class="field-error" id="err-showDate" th:if="${fieldErrors != null and fieldErrors.containsKey('startTime')}" th:text="${fieldErrors.get('startTime')}"></span>
+                        <span class="field-error" id="err-showDate" th:unless="${fieldErrors != null and fieldErrors.containsKey('startTime')}"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="showTime">Giờ bắt đầu <span class="required">*</span></label>
+                        <input type="time" id="showTime" class="form-control"
+                               th:value="${#temporals.format(showtime.startTime.toLocalDateTime(), 'HH:mm')}" />
+                        <span class="field-error" id="err-showTime"></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="ticketPrice">Giá vé (VNĐ) <span class="required">*</span></label>
+                    <input type="number" id="ticketPrice" name="ticketPrice" class="form-control"
+                           th:value="${showtime.ticketPrice.longValue()}" />
+                    <span class="field-error" id="err-ticketPrice" th:if="${fieldErrors != null and fieldErrors.containsKey('ticketPrice')}" th:text="${fieldErrors.get('ticketPrice')}"></span>
+                    <span class="field-error" id="err-ticketPrice" th:unless="${fieldErrors != null and fieldErrors.containsKey('ticketPrice')}"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="status">Trạng thái <span class="required">*</span></label>
+                    <select id="status" name="status" class="form-control">
+                        <option th:each="st : ${statuses}"
+                                th:value="${st}"
+                                th:text="${st == T(com.re.cinemabookingapp.enums.ShowtimeStatus).ACTIVE ? 'Hoạt động' : 'Đã ẩn'}"
+                                th:selected="${showtime.status == st}">
+                        </option>
+                    </select>
+                </div>
+
+                <!-- Auto-calculated info for edit -->
+                <div id="calcInfo" class="calc-info">
+                    <div class="calc-info-title"><i class="fa-solid fa-calculator"></i> Thông tin tự tính</div>
+                    <div class="calc-info-row">
+                        <span>Thời lượng phim:</span>
+                        <strong id="calcDuration" th:text="${showtime.movie.durationMinutes + ' phút'}">—</strong>
+                    </div>
+                    <div class="calc-info-row">
+                        <span>Thời gian dọn phòng:</span>
+                        <strong>15 phút</strong>
+                    </div>
+                    <div class="calc-info-row">
+                        <span>Giờ kết thúc dự kiến:</span>
+                        <strong id="calcEndTime" th:text="${#temporals.format(showtime.endTime.toLocalDateTime(), 'HH:mm dd/MM/yyyy')}">—</strong>
+                    </div>
+                </div>
+
+                <input type="hidden" id="editDuration" th:value="${showtime.movie.durationMinutes}" />
+
+                <div class="form-actions">
+                    <a th:href="@{/admin/showtimes}" class="btn-cancel">Hủy bỏ</a>
+                    <button type="button" class="btn-save" onclick="showConfirm()">
+                        <i class="fa-solid fa-floppy-disk"></i> Lưu thay đổi
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div id="confirmModal" class="confirm-overlay">
+        <div class="confirm-box">
+            <div class="confirm-icon confirm-icon-success">
+                <i class="fa-solid fa-calendar-check"></i>
+            </div>
+            <h3 class="confirm-title" th:text="${isEdit} ? 'Lưu thay đổi?' : 'Tạo suất chiếu?'">Xác nhận</h3>
+            <p class="confirm-desc" th:text="${isEdit} ? 'Bạn có chắc chắn muốn lưu các thay đổi?' : 'Bạn có chắc chắn muốn tạo suất chiếu này?'"></p>
+            <div class="confirm-actions">
+                <button type="button" class="confirm-btn cancel" onclick="hideConfirm()">Huỷ</button>
+                <button type="button" class="confirm-btn confirm-btn-success" onclick="submitForm()">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CSRF token for AJAX -->
+    <meta name="_csrf" th:content="${_csrf.token}" />
+    <meta name="_csrf_header" th:content="${_csrf.headerName}" />
+
+    <script th:src="@{/js/admin/showtime-form.js}"></script>
+</th:block>
+</body>
+</html>
