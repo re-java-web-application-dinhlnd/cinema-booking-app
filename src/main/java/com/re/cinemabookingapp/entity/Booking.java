@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,6 +23,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -33,6 +35,9 @@ public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "booking_code", nullable = false, unique = true, updatable = false, length = 12)
+    private String bookingCode;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -54,4 +59,11 @@ public class Booking {
 
     @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BookingProduct> bookingProducts;
+
+    @PrePersist
+    private void generateBookingCode() {
+        if (this.bookingCode == null) {
+            this.bookingCode = UUID.randomUUID().toString().replace("-", "").substring(0, 12).toUpperCase();
+        }
+    }
 }

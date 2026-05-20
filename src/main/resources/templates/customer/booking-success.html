@@ -6,25 +6,100 @@
 </head>
 <body>
 <main>
-    <link rel="stylesheet" th:href="@{/css/customer/booking-confirm.css}" />
+    <link rel="stylesheet" th:href="@{/css/customer/booking-success.css}" />
 
-    <div class="confirm-page">
-        <div class="confirm-container" style="max-width: 600px; text-align: center; padding-top: 3rem;">
-            <div style="width:80px; height:80px; border-radius:50%; background:rgba(6,182,212,0.1); display:flex; align-items:center; justify-content:center; margin:0 auto 1.5rem; font-size:2rem; color:var(--color-primary);">
+    <div class="success-page">
+        <div class="success-container">
+
+            <div class="success-icon">
                 <i class="fa-solid fa-circle-check"></i>
             </div>
-            <h1 style="font-size:1.5rem; font-weight:700; color:var(--text-primary); margin-bottom:0.5rem;">
-                Đặt Vé Thành Công!
-            </h1>
-            <p style="color:var(--text-secondary); margin-bottom:0.5rem;">
-                Mã đơn: <strong th:text="'#' + ${bookingId}">​#1</strong>
+            <h1 class="success-title">Đặt Vé Thành Công!</h1>
+            <p class="success-subtitle">
+                Mã đơn: <strong th:text="${booking.bookingCode}">ABC123XYZ</strong>
+                <span class="success-date"
+                      th:text="'| ' + ${#dates.format(booking.bookingDate, 'HH:mm dd/MM/yyyy')}"></span>
             </p>
-            <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:2rem;">
-                Cảm ơn bạn đã đặt vé tại CineWave. Chúc bạn xem phim vui vẻ!
-            </p>
-            <a th:href="@{/movies}" style="display:inline-flex; align-items:center; gap:0.5rem; padding:0.7rem 1.5rem; background:var(--color-primary); color:white; border-radius:8px; font-weight:600; text-decoration:none; transition:all 0.2s;">
-                <i class="fa-solid fa-house"></i> Về trang phim
-            </a>
+
+            <div class="ticket-card" th:if="${showtime != null}">
+                <div class="ticket-header">
+                    <div class="ticket-movie-info">
+                        <img th:if="${movie != null && movie.posterUrl != null}"
+                             th:src="${movie.posterUrl}" class="ticket-poster" alt="" />
+                        <div>
+                            <h2 class="ticket-movie-title"
+                                th:text="${movie != null ? movie.title : 'N/A'}">Movie</h2>
+                            <div class="ticket-meta">
+                                <span>
+                                    <i class="fa-regular fa-clock"></i>
+                                    <span th:text="${#dates.format(showtime.startTime, 'HH:mm')}"></span>
+                                    ~ <span th:text="${#dates.format(showtime.endTime, 'HH:mm')}"></span>
+                                </span>
+                                <span>
+                                    <i class="fa-regular fa-calendar"></i>
+                                    <span th:text="${#dates.format(showtime.startTime, 'dd/MM/yyyy')}"></span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ticket-body">
+                    <div class="ticket-row">
+                        <span class="ticket-label">Ghế</span>
+                        <span class="ticket-value" th:text="${seatNames}">A1, A2</span>
+                    </div>
+                    <div class="ticket-row">
+                        <span class="ticket-label">Số lượng vé</span>
+                        <span class="ticket-value" th:text="${booking.tickets.size()}">2</span>
+                    </div>
+                    <div class="ticket-row">
+                        <span class="ticket-label">Tiền vé</span>
+                        <span class="ticket-value"
+                              th:text="${#numbers.formatDecimal(ticketTotal, 0, 'COMMA', 0, 'POINT') + 'đ'}">100,000đ</span>
+                    </div>
+
+                    <div th:if="${!booking.bookingProducts.isEmpty()}">
+                        <div class="ticket-divider"></div>
+                        <div class="ticket-row" th:each="bp : ${booking.bookingProducts}">
+                            <span class="ticket-label">
+                                <span th:text="${bp.product.name}">Combo</span>
+                                <span class="ticket-qty" th:text="'x' + ${bp.quantity}">x1</span>
+                            </span>
+                            <span class="ticket-value"
+                                  th:text="${#numbers.formatDecimal(bp.price, 0, 'COMMA', 0, 'POINT') + 'đ'}">55,000đ</span>
+                        </div>
+                        <div class="ticket-row">
+                            <span class="ticket-label">Tổng combo</span>
+                            <span class="ticket-value"
+                                  th:text="${#numbers.formatDecimal(comboTotal, 0, 'COMMA', 0, 'POINT') + 'đ'}">55,000đ</span>
+                        </div>
+                    </div>
+
+                    <div class="ticket-divider"></div>
+                    <div class="ticket-row ticket-total">
+                        <span class="ticket-label">Tổng thanh toán</span>
+                        <span class="ticket-value"
+                              th:text="${#numbers.formatDecimal(booking.totalAmount, 0, 'COMMA', 0, 'POINT') + 'đ'}">155,000đ</span>
+                    </div>
+
+                    <div class="ticket-row">
+                        <span class="ticket-label">Trạng thái</span>
+                        <span class="ticket-status confirmed">
+                            <i class="fa-solid fa-check-circle"></i> Đã xác nhận
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="success-actions">
+                <a th:href="@{/movies}" class="btn-action btn-primary-action">
+                    <i class="fa-solid fa-film"></i> Tiếp tục xem phim
+                </a>
+                <a th:href="@{/booking/history}" class="btn-action btn-secondary-action">
+                    <i class="fa-solid fa-receipt"></i> Lịch sử đặt vé
+                </a>
+            </div>
         </div>
     </div>
 </main>

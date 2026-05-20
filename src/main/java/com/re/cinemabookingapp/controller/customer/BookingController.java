@@ -8,14 +8,20 @@ import com.re.cinemabookingapp.entity.Product;
 import com.re.cinemabookingapp.entity.Seat;
 import com.re.cinemabookingapp.entity.Showtime;
 import com.re.cinemabookingapp.entity.User;
+import com.re.cinemabookingapp.configuration.security.CustomUserDetails;
 import com.re.cinemabookingapp.enums.ProductStatus;
 import com.re.cinemabookingapp.enums.SeatType;
 import com.re.cinemabookingapp.enums.ShowtimeStatus;
+import com.re.cinemabookingapp.repository.BookingRepository;
 import com.re.cinemabookingapp.repository.ProductRepository;
 import com.re.cinemabookingapp.repository.SeatRepository;
 import com.re.cinemabookingapp.repository.ShowtimeRepository;
 import com.re.cinemabookingapp.service.BookingService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -33,6 +39,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Controller
 @RequestMapping("/booking")
 @RequiredArgsConstructor
@@ -41,64 +48,84 @@ public class BookingController {
     private final ShowtimeRepository showtimeRepository;
     private final SeatRepository seatRepository;
     private final ProductRepository productRepository;
+    private final BookingRepository bookingRepository;
     private final BookingService bookingService;
 
     private static final BigDecimal VIP_MULTIPLIER = new BigDecimal("1.3");
     private static final BigDecimal SWEETBOX_MULTIPLIER = new BigDecimal("1.5");
+    private static final int MAX_SEATS = 8;
+    private static final int HISTORY_PAGE_SIZE = 10;
 
     @GetMapping("/seats")
-    public String seatSelection(@RequestParam Long showtimeId, Model model) {
-        Showtime showtime = validateShowtime(showtimeId);
-        List<SeatStatusDto> seats = bookingService.getSeatStatus(showtimeId);
+    public String seatSelection(@RequestParam Long showtimeId, Model model,
+                                RedirectAttributes redirectAttributes) {
+        try {
+            Showtime showtime = validateShowtime(showtimeId);
+            List<SeatStatusDto> seats = bookingService.getSeatStatus(showtimeId);
 
-        model.addAttribute("showtime", showtime);
-        model.addAttribute("movie", showtime.getMovie());
-        model.addAttribute("seats", seats);
-        model.addAttribute("ticketPrice", showtime.getTicketPrice());
-        return "customer/seat-selection";
+            model.addAttribute("showtime", showtime);
+            model.addAttribute("movie", showtime.getMovie());
+            model.addAttribute("seats", seats);
+            model.addAttribute("ticketPrice", showtime.getTicketPrice());
+            return "customer/seat-selection";
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("toastMessage", e.getMessage());
+            redirectAttributes.addFlashAttribute("toastType", "error");
+            return "redirect:/movies";
+        }
     }
 
     @PostMapping("/confirm")
     public String confirmPage(
             @RequestParam Long showtimeId,
             @RequestParam String seatIds,
-            Model model) {
+            Model model,
+            RedirectAttributes redirectAttributes) {
 
-        Showtime showtime = validateShowtime(showtimeId);
+        try {
+            Showtime showtime = validateShowtime(showtimeId);
+            List<Long> seatIdList = parseSeatIds(seatIds);
 
-        List<Long> seatIdList = parseSeatIds(seatIds);
-        if (seatIdList.isEmpty()) {
-            throw new IllegalArgumentException("Vui lòng chọn ít nhất 1 ghế!");
-        }
-
-        List<Seat> seats = seatRepository.findAllById(seatIdList);
-        if (seats.size() != seatIdList.size()) {
-            throw new IllegalArgumentException("Một số ghế không hợp lệ!");
-        }
-
-        BigDecimal ticketTotal = BigDecimal.ZERO;
-        for (Seat seat : seats) {
-            if (!seat.getRoom().getId().equals(showtime.getRoom().getId())) {
-                throw new IllegalArgumentException("Ghế không thuộc phòng chiếu!");
+            if (seatIdList.isEmpty()) {
+                throw new IllegalArgumentException("Vui lòng chọn ít nhất 1 ghế!");
             }
-            ticketTotal = ticketTotal.add(calculateSeatPrice(showtime.getTicketPrice(), seat.getSeatType()));
+            if (seatIdList.size() > MAX_SEATS) {
+                throw new IllegalArgumentException("Tối đa " + MAX_SEATS + " ghế mỗi lần đặt!");
+            }
+
+            List<Seat> seats = seatRepository.findAllById(seatIdList);
+            if (seats.size() != seatIdList.size()) {
+                throw new IllegalArgumentException("Một số ghế không hợp lệ!");
+            }
+
+            BigDecimal ticketTotal = BigDecimal.ZERO;
+            for (Seat seat : seats) {
+                if (!seat.getRoom().getId().equals(showtime.getRoom().getId())) {
+                    throw new IllegalArgumentException("Ghế " + seat.getSeatName() + " không thuộc phòng chiếu này!");
+                }
+                ticketTotal = ticketTotal.add(calculateSeatPrice(showtime.getTicketPrice(), seat.getSeatType()));
+            }
+
+            List<Product> products = productRepository.findByStatusOrderByTypeAscNameAsc(ProductStatus.ACTIVE);
+
+            String seatNames = seats.stream()
+                    .map(Seat::getSeatName)
+                    .sorted()
+                    .collect(Collectors.joining(", "));
+
+            model.addAttribute("showtime", showtime);
+            model.addAttribute("movie", showtime.getMovie());
+            model.addAttribute("selectedSeats", seats);
+            model.addAttribute("seatNames", seatNames);
+            model.addAttribute("seatIdsCsv", seatIds);
+            model.addAttribute("ticketTotal", ticketTotal);
+            model.addAttribute("products", products);
+            return "customer/booking-confirm";
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("toastMessage", e.getMessage());
+            redirectAttributes.addFlashAttribute("toastType", "error");
+            return "redirect:/booking/seats?showtimeId=" + showtimeId;
         }
-
-        List<Product> products = productRepository.findByStatusOrderByTypeAscNameAsc(ProductStatus.ACTIVE);
-
-        String seatNames = seats.stream()
-                .map(Seat::getSeatName)
-                .sorted()
-                .collect(Collectors.joining(", "));
-
-        model.addAttribute("showtime", showtime);
-        model.addAttribute("movie", showtime.getMovie());
-        model.addAttribute("selectedSeats", seats);
-        model.addAttribute("seatNames", seatNames);
-        model.addAttribute("seatIdsCsv", seatIds);
-        model.addAttribute("ticketTotal", ticketTotal);
-        model.addAttribute("products", products);
-        return "customer/booking-confirm";
     }
 
     @PostMapping("/checkout")
@@ -107,36 +134,104 @@ public class BookingController {
             @RequestParam String seatIds,
             @RequestParam(required = false) List<Long> productIds,
             @RequestParam(required = false) List<Integer> quantities,
-            @AuthenticationPrincipal User currentUser,
+            @AuthenticationPrincipal CustomUserDetails principal,
             RedirectAttributes redirectAttributes) {
 
-        BookingCreateDto dto = new BookingCreateDto();
-        dto.setShowtimeId(showtimeId);
-        dto.setSeatIds(parseSeatIds(seatIds));
-
-        if (productIds != null && quantities != null) {
-            List<ProductItemDto> items = new ArrayList<>();
-            for (int i = 0; i < productIds.size(); i++) {
-                int qty = (i < quantities.size()) ? quantities.get(i) : 0;
-                if (qty > 0) {
-                    ProductItemDto item = new ProductItemDto();
-                    item.setProductId(productIds.get(i));
-                    item.setQuantity(qty);
-                    items.add(item);
-                }
+        try {
+            if (principal == null) {
+                throw new IllegalArgumentException("Vui lòng đăng nhập để đặt vé!");
             }
-            dto.setProductItems(items);
-        }
+            User currentUser = principal.getUser();
 
-        Booking booking = bookingService.createBooking(dto, currentUser);
-        redirectAttributes.addFlashAttribute("booking", booking);
-        return "redirect:/booking/success?id=" + booking.getId();
+            BookingCreateDto dto = new BookingCreateDto();
+            dto.setShowtimeId(showtimeId);
+            dto.setSeatIds(parseSeatIds(seatIds));
+
+            if (productIds != null && quantities != null) {
+                List<ProductItemDto> items = new ArrayList<>();
+                for (int i = 0; i < productIds.size(); i++) {
+                    int qty = (i < quantities.size()) ? quantities.get(i) : 0;
+                    if (qty > 0) {
+                        ProductItemDto item = new ProductItemDto();
+                        item.setProductId(productIds.get(i));
+                        item.setQuantity(qty);
+                        items.add(item);
+                    }
+                }
+                dto.setProductItems(items);
+            }
+
+            Booking booking = bookingService.createBooking(dto, currentUser);
+            return "redirect:/booking/success?code=" + booking.getBookingCode();
+
+        } catch (IllegalArgumentException e) {
+            log.warn("Booking failed — {}", e.getMessage());
+            redirectAttributes.addFlashAttribute("toastMessage", e.getMessage());
+            redirectAttributes.addFlashAttribute("toastType", "error");
+            return "redirect:/booking/seats?showtimeId=" + showtimeId;
+        } catch (DataIntegrityViolationException e) {
+            log.error("Booking race condition — showtimeId: {}, seatIds: {}", showtimeId, seatIds, e);
+            redirectAttributes.addFlashAttribute("toastMessage",
+                    "Ghế bạn chọn vừa được người khác đặt. Vui lòng chọn lại!");
+            redirectAttributes.addFlashAttribute("toastType", "error");
+            return "redirect:/booking/seats?showtimeId=" + showtimeId;
+        }
     }
 
     @GetMapping("/success")
-    public String successPage(@RequestParam Long id, Model model) {
-        model.addAttribute("bookingId", id);
+    public String successPage(@RequestParam String code,
+                              @AuthenticationPrincipal CustomUserDetails principal,
+                              Model model,
+                              RedirectAttributes redirectAttributes) {
+        Booking booking = bookingRepository.findByBookingCode(code).orElse(null);
+
+        if (booking == null) {
+            redirectAttributes.addFlashAttribute("toastMessage", "Đơn đặt vé không tồn tại!");
+            redirectAttributes.addFlashAttribute("toastType", "error");
+            return "redirect:/movies";
+        }
+
+        if (!booking.getUser().getId().equals(principal.getUser().getId())) {
+            redirectAttributes.addFlashAttribute("toastMessage", "Bạn không có quyền xem đơn này!");
+            redirectAttributes.addFlashAttribute("toastType", "error");
+            return "redirect:/movies";
+        }
+
+        Showtime showtime = booking.getTickets().isEmpty()
+                ? null
+                : booking.getTickets().get(0).getShowtime();
+
+        String seatNames = booking.getTickets().stream()
+                .map(t -> t.getSeat().getSeatName())
+                .sorted()
+                .collect(Collectors.joining(", "));
+
+        BigDecimal ticketTotal = booking.getTickets().stream()
+                .map(t -> t.getPrice())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal comboTotal = booking.getBookingProducts().stream()
+                .map(bp -> bp.getPrice())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        model.addAttribute("booking", booking);
+        model.addAttribute("showtime", showtime);
+        model.addAttribute("movie", showtime != null ? showtime.getMovie() : null);
+        model.addAttribute("seatNames", seatNames);
+        model.addAttribute("ticketTotal", ticketTotal);
+        model.addAttribute("comboTotal", comboTotal);
         return "customer/booking-success";
+    }
+
+    @GetMapping("/history")
+    public String bookingHistory(@RequestParam(defaultValue = "0") int page,
+                                 @AuthenticationPrincipal CustomUserDetails principal,
+                                 Model model) {
+        Page<Booking> bookings = bookingService.getUserBookings(
+                principal.getUser().getId(), PageRequest.of(page, HISTORY_PAGE_SIZE));
+        model.addAttribute("bookings", bookings);
+        model.addAttribute("currentPage", page);
+        return "customer/booking-history";
     }
 
     private Showtime validateShowtime(Long showtimeId) {

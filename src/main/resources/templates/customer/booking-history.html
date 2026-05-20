@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/main-layout :: layout(~{::main})}">
+<head>
+    <title>Lịch sử đặt vé - CineWave</title>
+</head>
+<body>
+<main>
+    <link rel="stylesheet" th:href="@{/css/customer/booking-success.css}" />
+
+    <div class="history-page">
+        <div class="history-container">
+            <h1 class="history-title">
+                <i class="fa-solid fa-receipt"></i> Lịch Sử Đặt Vé
+            </h1>
+
+            <div th:if="${bookings.isEmpty()}" class="history-empty">
+                <i class="fa-regular fa-ticket"></i>
+                <p>Bạn chưa có đơn đặt vé nào</p>
+                <a th:href="@{/movies}" class="btn-action btn-primary-action" style="margin-top:1rem">
+                    <i class="fa-solid fa-film"></i> Xem phim ngay
+                </a>
+            </div>
+
+            <div th:if="${!bookings.isEmpty()}" class="history-list">
+                <a th:each="b : ${bookings}"
+                   th:href="@{/booking/success(code=${b.bookingCode})}"
+                   class="history-card">
+                    <div class="history-card-info">
+                        <span class="history-card-title"
+                              th:text="${!b.tickets.isEmpty() ? b.tickets[0].showtime.movie.title : 'N/A'}">Movie</span>
+                        <div class="history-card-meta">
+                            <span th:if="${!b.tickets.isEmpty()}">
+                                <i class="fa-regular fa-clock"></i>
+                                <span th:text="${#dates.format(b.tickets[0].showtime.startTime, 'HH:mm dd/MM/yyyy')}"></span>
+                            </span>
+                            <span>
+                                <i class="fa-solid fa-chair"></i>
+                                <span th:text="${b.tickets.size()} + ' vé'">2 vé</span>
+                            </span>
+                        </div>
+                        <span class="history-status"
+                              th:classappend="${b.status.name() == 'CONFIRMED' ? 'confirmed' :
+                                               (b.status.name() == 'CANCELLED' ? 'cancelled' : 'pending')}"
+                              th:text="${b.status.name() == 'CONFIRMED' ? 'Đã xác nhận' :
+                                        (b.status.name() == 'CANCELLED' ? 'Đã hủy' : 'Chờ xử lý')}">Status</span>
+                    </div>
+                    <span class="history-card-amount"
+                          th:text="${#numbers.formatDecimal(b.totalAmount, 0, 'COMMA', 0, 'POINT') + 'đ'}">155,000đ</span>
+                </a>
+            </div>
+
+            <div th:if="${bookings.totalPages > 1}" class="history-pagination">
+                <a th:href="@{/booking/history(page=${currentPage - 1})}"
+                   th:classappend="${currentPage == 0 ? 'disabled' : ''}"
+                   class="page-btn">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </a>
+                <th:block th:each="i : ${#numbers.sequence(0, bookings.totalPages - 1)}">
+                    <a th:href="@{/booking/history(page=${i})}"
+                       class="page-btn"
+                       th:classappend="${i == currentPage ? 'active' : ''}"
+                       th:text="${i + 1}">1</a>
+                </th:block>
+                <a th:href="@{/booking/history(page=${currentPage + 1})}"
+                   th:classappend="${currentPage >= bookings.totalPages - 1 ? 'disabled' : ''}"
+                   class="page-btn">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>

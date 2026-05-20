@@ -58,6 +58,15 @@
     <!-- Scripts: global.js trước, auth-modal.js sau -->
     <script th:src="@{/js/global.js}"></script>
     <script th:src="@{/js/auth-modal.js}"></script>
+    <script th:if="${toastMessage != null}" th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            var msg = /*[[${toastMessage}]]*/ '';
+            var type = /*[[${toastType}]]*/ 'info';
+            if (msg && typeof showToast === 'function') {
+                showToast(msg, type);
+            }
+        });
+    </script>
 
 </body>
 </html>
