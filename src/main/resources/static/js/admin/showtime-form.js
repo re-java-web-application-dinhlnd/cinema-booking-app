@@ -150,9 +150,10 @@ document.addEventListener('DOMContentLoaded', () => {
         roomSelect.addEventListener('change', loadRoomSchedule);
     }
 
-    // Initial calc for edit mode
-    if (editDuration && showDateInput && showDateInput.value) {
+    // Initial calc — for edit mode OR create re-render (after validation error)
+    if (getSelectedDuration() && showDateInput && showDateInput.value) {
         recalculate();
+        loadRoomSchedule();
     }
 
     // ===== Inline Field Errors =====

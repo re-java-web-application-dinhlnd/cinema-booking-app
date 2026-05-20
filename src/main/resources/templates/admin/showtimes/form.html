@@ -30,7 +30,8 @@
                     <select id="movieId" name="movieId" class="form-control">
                         <option value="">-- Chọn phim --</option>
                         <option th:each="m : ${movies}" th:value="${m.id}" th:text="${m.title}"
-                                th:attr="data-duration=${m.durationMinutes}"></option>
+                                th:attr="data-duration=${m.durationMinutes}"
+                                th:selected="${dto != null and dto.movieId != null and dto.movieId == m.id}"></option>
                     </select>
                     <span class="field-error" id="err-movieId" th:if="${fieldErrors != null and fieldErrors.containsKey('movieId')}" th:text="${fieldErrors.get('movieId')}"></span>
                     <span class="field-error" id="err-movieId" th:unless="${fieldErrors != null and fieldErrors.containsKey('movieId')}"></span>
@@ -41,7 +42,8 @@
                     <select id="roomId" name="roomId" class="form-control">
                         <option value="">-- Chọn phòng --</option>
                         <option th:each="r : ${rooms}" th:value="${r.id}"
-                                th:text="${r.name + ' (' + r.totalSeats + ' ghế)'}"></option>
+                                th:text="${r.name + ' (' + r.totalSeats + ' ghế)'}"
+                                th:selected="${dto != null and dto.roomId != null and dto.roomId == r.id}"></option>
                     </select>
                     <span class="field-error" id="err-roomId" th:if="${fieldErrors != null and fieldErrors.containsKey('roomId')}" th:text="${fieldErrors.get('roomId')}"></span>
                     <span class="field-error" id="err-roomId" th:unless="${fieldErrors != null and fieldErrors.containsKey('roomId')}"></span>
@@ -50,13 +52,15 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="showDate">Ngày chiếu <span class="required">*</span></label>
-                        <input type="date" id="showDate" class="form-control" />
+                        <input type="date" id="showDate" class="form-control"
+                               th:value="${dto != null and dto.startTime != null ? #temporals.format(dto.startTime, 'yyyy-MM-dd') : ''}" />
                         <span class="field-error" id="err-showDate" th:if="${fieldErrors != null and fieldErrors.containsKey('startTime')}" th:text="${fieldErrors.get('startTime')}"></span>
                         <span class="field-error" id="err-showDate" th:unless="${fieldErrors != null and fieldErrors.containsKey('startTime')}"></span>
                     </div>
                     <div class="form-group">
                         <label for="showTime">Giờ bắt đầu <span class="required">*</span></label>
-                        <input type="time" id="showTime" class="form-control" />
+                        <input type="time" id="showTime" class="form-control"
+                               th:value="${dto != null and dto.startTime != null ? #temporals.format(dto.startTime, 'HH:mm') : ''}" />
                         <span class="field-error" id="err-showTime"></span>
                     </div>
                 </div>
@@ -64,7 +68,8 @@
                 <div class="form-group">
                     <label for="ticketPrice">Giá vé (VNĐ) <span class="required">*</span></label>
                     <input type="number" id="ticketPrice" name="ticketPrice" class="form-control"
-                           placeholder="VD: 75000" />
+                           placeholder="VD: 75000"
+                           th:value="${dto != null and dto.ticketPrice != null ? dto.ticketPrice.longValue() : ''}" />
                     <span class="field-error" id="err-ticketPrice" th:if="${fieldErrors != null and fieldErrors.containsKey('ticketPrice')}" th:text="${fieldErrors.get('ticketPrice')}"></span>
                     <span class="field-error" id="err-ticketPrice" th:unless="${fieldErrors != null and fieldErrors.containsKey('ticketPrice')}"></span>
                 </div>

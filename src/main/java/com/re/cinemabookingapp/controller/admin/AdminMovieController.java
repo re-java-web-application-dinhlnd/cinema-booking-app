@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -81,7 +82,7 @@ public class AdminMovieController {
         TmdbSearchResponse response = tmdbService.searchMovies(q.trim(), page);
         if (response == null) {
             response = new TmdbSearchResponse();
-            response.setResults(java.util.List.of());
+            response.setResults(List.of());
         }
         return ResponseEntity.ok(response);
     }
@@ -103,7 +104,7 @@ public class AdminMovieController {
 
         if (response == null) {
             response = new TmdbSearchResponse();
-            response.setResults(java.util.List.of());
+            response.setResults(List.of());
         }
         return ResponseEntity.ok(response);
     }

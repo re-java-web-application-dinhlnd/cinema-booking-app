@@ -64,7 +64,7 @@ public class AdminShowtimeController {
 
         model.addAttribute("showtimes", showtimes);
         model.addAttribute("movies", movieRepository.findByStatusIn(
-                java.util.List.of(MovieStatus.ACTIVE, MovieStatus.COMING_SOON)));
+                List.of(MovieStatus.ACTIVE, MovieStatus.COMING_SOON)));
         model.addAttribute("rooms", roomRepository.findAllByStatus(RoomStatus.ACTIVE));
         model.addAttribute("statuses", ShowtimeStatus.values());
 
@@ -82,7 +82,7 @@ public class AdminShowtimeController {
     @GetMapping("/create")
     public String createForm(Model model) {
         model.addAttribute("movies", movieRepository.findByStatusIn(
-                java.util.List.of(MovieStatus.ACTIVE, MovieStatus.COMING_SOON)));
+                List.of(MovieStatus.ACTIVE, MovieStatus.COMING_SOON)));
         model.addAttribute("rooms", roomRepository.findAllByStatus(RoomStatus.ACTIVE));
         return "admin/showtimes/form";
     }
@@ -91,23 +91,30 @@ public class AdminShowtimeController {
      * Xử lý tạo suất chiếu mới.
      */
     @PostMapping("/create")
-    public String createShowtime(@Valid @ModelAttribute ShowtimeCreateDto dto,
+    public String createShowtime(@Valid @ModelAttribute("dto") ShowtimeCreateDto dto,
                                  BindingResult bindingResult,
+                                 Model model,
                                  RedirectAttributes redirectAttributes) {
         // Backend validation — DTO constraints
         if (bindingResult.hasErrors()) {
             Map<String, String> fieldErrors = new HashMap<>();
             bindingResult.getFieldErrors().forEach(e -> fieldErrors.put(e.getField(), e.getDefaultMessage()));
-            redirectAttributes.addFlashAttribute("fieldErrors", fieldErrors);
-            return "redirect:/admin/showtimes/create";
+            model.addAttribute("fieldErrors", fieldErrors);
+            model.addAttribute("movies", movieRepository.findByStatusIn(
+                    List.of(MovieStatus.ACTIVE, MovieStatus.COMING_SOON)));
+            model.addAttribute("rooms", roomRepository.findAllByStatus(RoomStatus.ACTIVE));
+            return "admin/showtimes/form";
         }
         try {
             showtimeService.create(dto);
             redirectAttributes.addFlashAttribute("successMessage", "Tạo suất chiếu thành công!");
             return "redirect:/admin/showtimes";
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-            return "redirect:/admin/showtimes/create";
+            model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("movies", movieRepository.findByStatusIn(
+                    List.of(MovieStatus.ACTIVE, MovieStatus.COMING_SOON)));
+            model.addAttribute("rooms", roomRepository.findAllByStatus(RoomStatus.ACTIVE));
+            return "admin/showtimes/form";
         }
     }
 
@@ -130,21 +137,30 @@ public class AdminShowtimeController {
     public String updateShowtime(@PathVariable Long id,
                                  @Valid @ModelAttribute ShowtimeUpdateDto dto,
                                  BindingResult bindingResult,
+                                 Model model,
                                  RedirectAttributes redirectAttributes) {
+        Showtime showtime = showtimeService.getById(id);
+
         // Backend validation — DTO constraints
         if (bindingResult.hasErrors()) {
             Map<String, String> fieldErrors = new HashMap<>();
             bindingResult.getFieldErrors().forEach(e -> fieldErrors.put(e.getField(), e.getDefaultMessage()));
-            redirectAttributes.addFlashAttribute("fieldErrors", fieldErrors);
-            return "redirect:/admin/showtimes/" + id + "/edit";
+            model.addAttribute("fieldErrors", fieldErrors);
+            model.addAttribute("showtime", showtime);
+            model.addAttribute("statuses", ShowtimeStatus.values());
+            model.addAttribute("isEdit", true);
+            return "admin/showtimes/form";
         }
         try {
             showtimeService.update(id, dto);
             redirectAttributes.addFlashAttribute("successMessage", "Cập nhật suất chiếu thành công!");
             return "redirect:/admin/showtimes";
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
-            return "redirect:/admin/showtimes/" + id + "/edit";
+            model.addAttribute("errorMessage", e.getMessage());
+            model.addAttribute("showtime", showtime);
+            model.addAttribute("statuses", ShowtimeStatus.values());
+            model.addAttribute("isEdit", true);
+            return "admin/showtimes/form";
         }
     }
 

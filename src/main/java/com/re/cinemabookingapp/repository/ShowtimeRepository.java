@@ -18,21 +18,25 @@ public interface ShowtimeRepository extends JpaRepository<Showtime, Long> {
     /**
      * Tìm các suất chiếu bị xung đột trong cùng phòng.
      * Logic overlap: 2 khoảng thời gian chồng lấn khi (start1 < end2) AND (start2 < end1)
+     * Cộng thêm 15 phút buffer dọn phòng vào endTime của suất chiếu đã tồn tại.
      */
     @Query("SELECT s FROM Showtime s WHERE s.room.id = :roomId " +
             "AND s.status = 'ACTIVE' " +
-            "AND s.startTime < :newEnd AND s.endTime > :newStart")
+            "AND s.startTime < :newEnd " +
+            "AND FUNCTION('TIMESTAMPADD', MINUTE, 15, s.endTime) > :newStart")
     List<Showtime> findConflicting(@Param("roomId") Long roomId,
                                    @Param("newStart") Timestamp newStart,
                                    @Param("newEnd") Timestamp newEnd);
 
     /**
      * Tìm xung đột nhưng loại trừ chính suất chiếu đang sửa (dùng khi UPDATE).
+     * Cộng thêm 15 phút buffer dọn phòng.
      */
     @Query("SELECT s FROM Showtime s WHERE s.room.id = :roomId " +
             "AND s.id <> :excludeId " +
             "AND s.status = 'ACTIVE' " +
-            "AND s.startTime < :newEnd AND s.endTime > :newStart")
+            "AND s.startTime < :newEnd " +
+            "AND FUNCTION('TIMESTAMPADD', MINUTE, 15, s.endTime) > :newStart")
     List<Showtime> findConflictingExcluding(@Param("roomId") Long roomId,
                                             @Param("excludeId") Long excludeId,
                                             @Param("newStart") Timestamp newStart,
