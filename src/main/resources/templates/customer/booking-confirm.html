@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/main-layout :: layout(~{::main})}">
+<head>
+    <title>Chọn combo - CineWave</title>
+</head>
+<body>
+<main>
+    <link rel="stylesheet" th:href="@{/css/customer/booking-confirm.css}" />
+
+    <div class="confirm-page">
+        <div class="confirm-container">
+
+            <div class="confirm-header">
+                <a th:href="@{/booking/seats(showtimeId=${showtime.id})}" class="btn-back">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </a>
+                <h1 class="confirm-title">Chọn Combo & Bắp Nước</h1>
+            </div>
+
+            <div class="confirm-layout">
+                <div class="combo-section">
+                    <div class="combo-group" th:each="type : ${T(com.re.cinemabookingapp.enums.ProductType).values()}">
+                        <h3 class="combo-group-title"
+                            th:text="${type.name() == 'COMBO' ? '🍿 Combo' : '🥤 Đồ Lẻ'}">Group</h3>
+
+                        <div class="product-list">
+                            <div class="product-card"
+                                 th:each="p : ${products}"
+                                 th:if="${p.type == type}"
+                                 th:data-id="${p.id}"
+                                 th:data-price="${p.price}">
+                                <div class="product-info">
+                                    <span class="product-name" th:text="${p.name}">Combo Solo</span>
+                                    <span class="product-desc" th:if="${p.description != null}"
+                                          th:text="${p.description}">1 Bắp + 1 Nước</span>
+                                    <span class="product-price"
+                                          th:text="${#numbers.formatDecimal(p.price, 0, 'COMMA', 0, 'POINT') + 'đ'}">55,000đ</span>
+                                </div>
+                                <div class="product-counter">
+                                    <button type="button" class="counter-btn minus" onclick="changeQty(this, -1)">
+                                        <i class="fa-solid fa-minus"></i>
+                                    </button>
+                                    <span class="counter-value">0</span>
+                                    <button type="button" class="counter-btn plus" onclick="changeQty(this, 1)">
+                                        <i class="fa-solid fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p class="combo-skip-hint">
+                        <i class="fa-solid fa-circle-info"></i>
+                        Bạn có thể bỏ qua bước này nếu không cần thêm combo
+                    </p>
+                </div>
+
+                <div class="order-summary">
+                    <h3 class="summary-title">Thông tin đặt vé</h3>
+
+                    <div class="summary-movie">
+                        <img th:if="${movie.posterUrl != null}" th:src="${movie.posterUrl}"
+                             class="summary-poster" th:alt="${movie.title}" />
+                        <div>
+                            <span class="summary-movie-title" th:text="${movie.title}">Movie</span>
+                            <span class="summary-showtime">
+                                <i class="fa-regular fa-clock"></i>
+                                <span th:text="${#dates.format(showtime.startTime, 'HH:mm')}">19:30</span>
+                                ~ <span th:text="${#dates.format(showtime.endTime, 'HH:mm')}">21:30</span>
+                                | <span th:text="${#dates.format(showtime.startTime, 'dd/MM/yyyy')}">20/05</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="summary-details">
+                        <div class="summary-row">
+                            <span>Ghế</span>
+                            <span th:text="${seatNames}">A1, A2</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Tiền vé</span>
+                            <span th:text="${#numbers.formatDecimal(ticketTotal, 0, 'COMMA', 0, 'POINT') + 'đ'}">100,000đ</span>
+                        </div>
+                        <div class="summary-row" id="comboRow" style="display:none">
+                            <span>Combo/Bắp nước</span>
+                            <span id="comboTotalText">0đ</span>
+                        </div>
+                        <div class="summary-divider"></div>
+                        <div class="summary-row summary-grand-total">
+                            <span>Tổng cộng</span>
+                            <span id="grandTotalText"
+                                  th:text="${#numbers.formatDecimal(ticketTotal, 0, 'COMMA', 0, 'POINT') + 'đ'}">100,000đ</span>
+                        </div>
+                    </div>
+
+                    <form th:action="@{/booking/checkout}" method="post" id="checkoutForm">
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                        <input type="hidden" name="showtimeId" th:value="${showtime.id}" />
+                        <input type="hidden" name="seatIds" th:value="${seatIdsCsv}" />
+                        <div id="productInputs"></div>
+                        <button type="submit" class="btn-checkout">
+                            <i class="fa-solid fa-credit-card"></i> Thanh toán
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        const TICKET_TOTAL = /*[[${ticketTotal}]]*/ 0;
+    </script>
+    <script th:src="@{/js/customer/booking-confirm.js}"></script>
+</main>
+</body>
+</html>

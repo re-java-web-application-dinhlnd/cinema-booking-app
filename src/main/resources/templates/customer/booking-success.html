@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/main-layout :: layout(~{::main})}">
+<head>
+    <title>Đặt vé thành công - CineWave</title>
+</head>
+<body>
+<main>
+    <link rel="stylesheet" th:href="@{/css/customer/booking-confirm.css}" />
+
+    <div class="confirm-page">
+        <div class="confirm-container" style="max-width: 600px; text-align: center; padding-top: 3rem;">
+            <div style="width:80px; height:80px; border-radius:50%; background:rgba(6,182,212,0.1); display:flex; align-items:center; justify-content:center; margin:0 auto 1.5rem; font-size:2rem; color:var(--color-primary);">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h1 style="font-size:1.5rem; font-weight:700; color:var(--text-primary); margin-bottom:0.5rem;">
+                Đặt Vé Thành Công!
+            </h1>
+            <p style="color:var(--text-secondary); margin-bottom:0.5rem;">
+                Mã đơn: <strong th:text="'#' + ${bookingId}">​#1</strong>
+            </p>
+            <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:2rem;">
+                Cảm ơn bạn đã đặt vé tại CineWave. Chúc bạn xem phim vui vẻ!
+            </p>
+            <a th:href="@{/movies}" style="display:inline-flex; align-items:center; gap:0.5rem; padding:0.7rem 1.5rem; background:var(--color-primary); color:white; border-radius:8px; font-weight:600; text-decoration:none; transition:all 0.2s;">
+                <i class="fa-solid fa-house"></i> Về trang phim
+            </a>
+        </div>
+    </div>
+</main>
+</body>
+</html>
