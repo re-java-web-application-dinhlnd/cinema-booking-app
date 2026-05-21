@@ -61,4 +61,6 @@ public interface ShowtimeRepository extends JpaRepository<Showtime, Long> {
     List<Showtime> findActiveByMovieAndDate(@Param("movieId") Long movieId,
                                             @Param("dayStart") Timestamp dayStart,
                                             @Param("dayEnd") Timestamp dayEnd);
+
+    boolean existsByMovieIdAndStatusAndStartTimeAfter(Long movieId, ShowtimeStatus status, Timestamp time);
 }

@@ -5,11 +5,14 @@ import com.re.cinemabookingapp.dto.showtime.ShowtimeUpdateDto;
 import com.re.cinemabookingapp.entity.Movie;
 import com.re.cinemabookingapp.entity.Room;
 import com.re.cinemabookingapp.entity.Showtime;
+import com.re.cinemabookingapp.enums.MovieStatus;
+import com.re.cinemabookingapp.enums.RoomStatus;
 import com.re.cinemabookingapp.enums.ShowtimeStatus;
 import com.re.cinemabookingapp.mapper.ShowtimeMapper;
 import com.re.cinemabookingapp.repository.MovieRepository;
 import com.re.cinemabookingapp.repository.RoomRepository;
 import com.re.cinemabookingapp.repository.ShowtimeRepository;
+import com.re.cinemabookingapp.repository.TicketRepository;
 import com.re.cinemabookingapp.service.ShowtimeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +33,7 @@ public class ShowtimeServiceImpl implements ShowtimeService {
     private final ShowtimeRepository showtimeRepository;
     private final MovieRepository movieRepository;
     private final RoomRepository roomRepository;
+    private final TicketRepository ticketRepository;
     private final ShowtimeMapper showtimeMapper;
 
     /** Buffer dọn phòng sau mỗi suất chiếu (phút) */
@@ -45,7 +49,16 @@ public class ShowtimeServiceImpl implements ShowtimeService {
         Room room = roomRepository.findById(dto.getRoomId())
                 .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy phòng chiếu với ID: " + dto.getRoomId()));
 
-        // 2. Validate: không cho chọn ngày quá khứ
+        // 2. Validate: Trạng thái hoạt động của phim và phòng
+        if (movie.getStatus() == MovieStatus.INACTIVE) {
+            throw new IllegalArgumentException("Không thể xếp lịch chiếu cho phim đã bị ẩn hoặc ngưng hoạt động!");
+        }
+
+        if (room.getStatus() == RoomStatus.INACTIVE) {
+            throw new IllegalArgumentException("Không thể xếp lịch chiếu tại phòng đang tạm ngưng hoạt động!");
+        }
+
+        // 3. Validate: không cho chọn ngày quá khứ
         if (dto.getStartTime().isBefore(LocalDateTime.now())) {
             throw new IllegalArgumentException("Không thể tạo suất chiếu trong quá khứ!");
         }
@@ -86,10 +99,24 @@ public class ShowtimeServiceImpl implements ShowtimeService {
         Timestamp newStartTime = Timestamp.valueOf(dto.getStartTime());
         Timestamp newEndTime = calculateEndTime(dto.getStartTime(), showtime.getMovie().getDurationMinutes());
 
-        // 3. Kiểm tra xung đột (loại trừ chính nó)
+        // 3. Ràng buộc suất chiếu đã bán vé
+        long bookedCount = ticketRepository.countBookedSeats(id);
+        if (bookedCount > 0) {
+            if (!newStartTime.equals(showtime.getStartTime())) {
+                throw new IllegalArgumentException("Không thể thay đổi thời gian chiếu của suất chiếu đã có vé đặt!");
+            }
+            if (dto.getTicketPrice() == null || dto.getTicketPrice().compareTo(showtime.getTicketPrice()) != 0) {
+                throw new IllegalArgumentException("Không thể thay đổi giá vé của suất chiếu đã có vé đặt!");
+            }
+            if (dto.getStatus() == ShowtimeStatus.HIDDEN && showtime.getStatus() != ShowtimeStatus.HIDDEN) {
+                throw new IllegalArgumentException("Không thể ẩn suất chiếu đã có vé đặt!");
+            }
+        }
+
+        // 4. Kiểm tra xung đột (loại trừ chính nó)
         validateNoConflict(showtime.getRoom().getId(), id, newStartTime, newEndTime);
 
-        // 3. Cập nhật các field
+        // 5. Cập nhật các field
         showtime.setStartTime(newStartTime);
         showtime.setEndTime(newEndTime);
         showtime.setTicketPrice(dto.getTicketPrice());
@@ -116,6 +143,12 @@ public class ShowtimeServiceImpl implements ShowtimeService {
     @Transactional
     public void softHide(Long id) {
         Showtime showtime = getById(id);
+
+        long bookedCount = ticketRepository.countBookedSeats(id);
+        if (bookedCount > 0) {
+            throw new IllegalArgumentException("Không thể ẩn suất chiếu đã có vé đặt!");
+        }
+
         showtime.setStatus(ShowtimeStatus.HIDDEN);
         showtimeRepository.save(showtime);
         log.info("Ẩn suất chiếu #{}: '{}' tại '{}'",

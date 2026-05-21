@@ -5,8 +5,10 @@ import com.re.cinemabookingapp.entity.Genre;
 import com.re.cinemabookingapp.entity.Movie;
 import com.re.cinemabookingapp.enums.MovieStatus;
 import com.re.cinemabookingapp.dto.movie.MovieUpdateDto;
+import com.re.cinemabookingapp.enums.ShowtimeStatus;
 import com.re.cinemabookingapp.repository.GenreRepository;
 import com.re.cinemabookingapp.repository.MovieRepository;
+import com.re.cinemabookingapp.repository.ShowtimeRepository;
 import com.re.cinemabookingapp.service.MovieService;
 import com.re.cinemabookingapp.service.TmdbService;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.List;
 
 @Slf4j
@@ -26,6 +29,7 @@ public class MovieServiceImpl implements MovieService {
 
     private final MovieRepository movieRepository;
     private final GenreRepository genreRepository;
+    private final ShowtimeRepository showtimeRepository;
     private final TmdbService tmdbService;
 
     @Override
@@ -96,6 +100,15 @@ public class MovieServiceImpl implements MovieService {
     @Transactional
     public Movie updateMovie(Long id, MovieUpdateDto dto) {
         Movie movie = getById(id);
+
+        if (dto.getStatus() == MovieStatus.INACTIVE) {
+            boolean hasFutureShowtimes = showtimeRepository.existsByMovieIdAndStatusAndStartTimeAfter(
+                    id, ShowtimeStatus.ACTIVE, new Timestamp(System.currentTimeMillis()));
+            if (hasFutureShowtimes) {
+                throw new IllegalArgumentException("Không thể ẩn phim vì phim đang có các suất chiếu hoạt động trong tương lai!");
+            }
+        }
+
         movie.setTitle(dto.getTitle());
         movie.setDescription(dto.getDescription());
         movie.setDurationMinutes(dto.getDurationMinutes());
@@ -111,6 +124,13 @@ public class MovieServiceImpl implements MovieService {
     @Transactional
     public void softDelete(Long id) {
         Movie movie = getById(id);
+
+        boolean hasFutureShowtimes = showtimeRepository.existsByMovieIdAndStatusAndStartTimeAfter(
+                id, ShowtimeStatus.ACTIVE, new Timestamp(System.currentTimeMillis()));
+        if (hasFutureShowtimes) {
+            throw new IllegalArgumentException("Không thể ẩn phim vì phim đang có các suất chiếu hoạt động trong tương lai!");
+        }
+
         movie.setStatus(MovieStatus.INACTIVE);
         movieRepository.save(movie);
         log.info("Soft deleted movie: '{}' (id={})", movie.getTitle(), id);
