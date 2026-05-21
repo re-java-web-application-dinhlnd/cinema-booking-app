@@ -194,4 +194,18 @@ public class AdminMovieController {
         }
         return "redirect:/admin/movies";
     }
+
+    /**
+     * Bỏ ẩn phim (Khôi phục trạng thái hoạt động)
+     */
+    @PostMapping("/{id}/restore")
+    public String restoreMovie(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            movieService.restore(id);
+            redirectAttributes.addFlashAttribute("successMessage", "Đã bỏ ẩn phim thành công!");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi: " + e.getMessage());
+        }
+        return "redirect:/admin/movies";
+    }
 }

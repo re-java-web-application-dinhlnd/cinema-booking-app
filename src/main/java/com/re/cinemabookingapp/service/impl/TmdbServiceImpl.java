@@ -60,7 +60,7 @@ public class TmdbServiceImpl implements TmdbService {
                             .path("/movie/{id}")
                             .queryParam("api_key", tmdbProperties.getApiKey())
                             .queryParam("language", "vi-VN")
-                            .queryParam("append_to_response", "videos")
+                            .queryParam("append_to_response", "videos,credits")
                             .build(tmdbId))
                     .retrieve()
                     .body(TmdbMovieDto.class);

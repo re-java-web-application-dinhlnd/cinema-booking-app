@@ -11,11 +11,12 @@
 
     <div class="detail-page">
 
-        <div class="detail-trailer-banner" th:if="${movie.trailerUrl != null}">
+        <div class="detail-trailer-banner">
             <div class="trailer-banner-inner" id="trailerBanner">
-                <img th:src="${movie.posterUrl != null ? movie.posterUrl : ''}"
+                <img th:src="${movie.backdropUrl != null ? movie.backdropUrl : (movie.posterUrl != null ? movie.posterUrl : '')}"
                      class="trailer-banner-bg" alt="" />
-                <button class="trailer-play-btn" th:data-trailer="${movie.trailerUrl}"
+                <button th:if="${movie.trailerUrl != null and !movie.trailerUrl.isBlank()}" 
+                        class="trailer-play-btn" th:data-trailer="${movie.trailerUrl}"
                         onclick="openTrailerModal(this.dataset.trailer)">
                     <i class="fa-solid fa-play"></i>
                 </button>
@@ -49,6 +50,12 @@
                     </div>
                     <div class="detail-genres" th:if="${movie.genres != null && !movie.genres.isEmpty()}">
                         <span class="genre-tag" th:each="g : ${movie.genres}" th:text="${g.name}"></span>
+                    </div>
+                    <div class="detail-actors" th:if="${movie.actors != null && !movie.actors.isEmpty()}">
+                        <span class="detail-actors-label">
+                            <i class="fa-solid fa-users detail-actors-icon"></i>Diễn viên:
+                        </span>
+                        <span class="detail-actors-list" th:text="${movie.actors}">Brad Pitt, Edward Norton</span>
                     </div>
                     <p class="detail-desc" th:if="${movie.description != null}" th:text="${movie.description}"></p>
                 </div>

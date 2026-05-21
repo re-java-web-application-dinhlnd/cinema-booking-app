@@ -66,6 +66,9 @@ public class Movie {
     @Column(nullable = false, length = 20)
     private MovieStatus status = MovieStatus.ACTIVE;
 
+    @Column(name = "actors", length = 1000)
+    private String actors;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private Timestamp createdAt;

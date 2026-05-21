@@ -20,7 +20,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -74,10 +77,38 @@ public class MovieServiceImpl implements MovieService {
             movie.setStatus(MovieStatus.ACTIVE);
         }
 
-        // 4. Map genres từ TMDB genre_ids → local Genre entities
-        if (detail.getGenreIds() != null && !detail.getGenreIds().isEmpty()) {
-            List<Genre> genres = genreRepository.findByTmdbIdIn(detail.getGenreIds());
+        // 4. Đồng bộ hóa genres chi tiết từ TMDB
+        if (detail.getGenres() != null && !detail.getGenres().isEmpty()) {
+            List<Genre> genres = new ArrayList<>();
+            for (var tmdbGenre : detail.getGenres()) {
+                // Kiểm tra xem thể loại đã tồn tại trong DB chưa
+                Genre genre = genreRepository.findByTmdbId(tmdbGenre.getId())
+                        .or(() -> genreRepository.findByName(tmdbGenre.getName()))
+                        .orElseGet(() -> {
+                            // Tạo mới nếu chưa có
+                            Genre newGenre = new Genre();
+                            newGenre.setTmdbId(tmdbGenre.getId());
+                            newGenre.setName(tmdbGenre.getName());
+                            return genreRepository.save(newGenre);
+                        });
+                genres.add(genre);
+            }
             movie.setGenres(genres);
+        }
+
+        // 5. Lấy danh sách diễn viên chính từ TMDB cast
+        if (detail.getCredits() != null && detail.getCredits().getCast() != null && !detail.getCredits().getCast().isEmpty()) {
+            // Sắp xếp theo order (thứ tự xuất hiện của diễn viên chính)
+            List<String> mainActors = detail.getCredits().getCast().stream()
+                    .sorted(Comparator.comparingInt(c -> c.getOrder() != null ? c.getOrder() : 999))
+                    .limit(5) // Lấy top 5 diễn viên chính
+                    .map(c -> c.getName() != null ? c.getName() : c.getOriginalName())
+                    .filter(Objects::nonNull)
+                    .toList();
+            
+            if (!mainActors.isEmpty()) {
+                movie.setActors(String.join(", ", mainActors));
+            }
         }
 
         Movie saved = movieRepository.save(movie);
@@ -114,6 +145,7 @@ public class MovieServiceImpl implements MovieService {
         movie.setDurationMinutes(dto.getDurationMinutes());
         movie.setReleaseDate(dto.getReleaseDate());
         movie.setTrailerUrl(dto.getTrailerUrl());
+        movie.setActors(dto.getActors());
         movie.setStatus(dto.getStatus());
         
         log.info("Updated movie: '{}' (id={})", movie.getTitle(), id);
@@ -134,5 +166,24 @@ public class MovieServiceImpl implements MovieService {
         movie.setStatus(MovieStatus.INACTIVE);
         movieRepository.save(movie);
         log.info("Soft deleted movie: '{}' (id={})", movie.getTitle(), id);
+    }
+
+    @Override
+    @Transactional
+    public void restore(Long id) {
+        Movie movie = getById(id);
+        if (movie.getStatus() != MovieStatus.INACTIVE) {
+            throw new IllegalArgumentException("Phim này hiện không bị ẩn!");
+        }
+
+        // Tự động khôi phục về trạng thái thích hợp dựa trên ngày khởi chiếu
+        if (movie.getReleaseDate() != null && movie.getReleaseDate().after(new Date(System.currentTimeMillis()))) {
+            movie.setStatus(MovieStatus.COMING_SOON);
+        } else {
+            movie.setStatus(MovieStatus.ACTIVE);
+        }
+
+        movieRepository.save(movie);
+        log.info("Restored movie: '{}' (id={}) to status '{}'", movie.getTitle(), id, movie.getStatus());
     }
 }

@@ -77,12 +77,28 @@
                         <a th:href="@{/admin/movies/{id}/edit(id=${movie.id})}" class="btn-edit">
                             <i class="fa-solid fa-pen"></i> Sửa
                         </a>
-                        <form th:action="@{/admin/movies/{id}/delete(id=${movie.id})}"
+                        <!-- Nút Ẩn (khi status != INACTIVE) -->
+                        <form th:if="${movie.status.name() != 'INACTIVE'}" 
+                              th:action="@{/admin/movies/{id}/delete(id=${movie.id})}"
                               method="post" class="inline-form"
-                              data-confirm="Bạn chắc chắn muốn ẩn phim này?">
+                              data-title="Xác nhận Ẩn Phim"
+                              data-confirm="Bạn chắc chắn muốn ẩn phim này?"
+                              data-type="danger">
                             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
                             <button type="submit" class="btn-delete">
                                 <i class="fa-solid fa-eye-slash"></i> Ẩn
+                            </button>
+                        </form>
+                        <!-- Nút Bỏ ẩn (khi status == INACTIVE) -->
+                        <form th:if="${movie.status.name() == 'INACTIVE'}" 
+                              th:action="@{/admin/movies/{id}/restore(id=${movie.id})}"
+                              method="post" class="inline-form"
+                              data-title="Xác nhận Bỏ Ẩn Phim"
+                              data-confirm="Bạn chắc chắn muốn bỏ ẩn phim này?"
+                              data-type="success">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <button type="submit" class="btn-restore">
+                                <i class="fa-solid fa-eye"></i> Bỏ ẩn
                             </button>
                         </form>
                     </div>
@@ -119,17 +135,17 @@
         </a>
     </div>
 
-    <!-- Confirm Modal for Delete -->
+    <!-- Confirm Modal for Delete/Restore -->
     <div id="deleteConfirmModal" class="confirm-overlay">
         <div class="confirm-box">
-            <div class="confirm-icon">
-                <i class="fa-solid fa-triangle-exclamation"></i>
+            <div class="confirm-icon" id="confirmIcon">
+                <i class="fa-solid fa-triangle-exclamation" id="confirmIconSymbol"></i>
             </div>
-            <h3 class="confirm-title">Xác nhận Ẩn Phim</h3>
-            <p class="confirm-desc" id="deleteConfirmDesc">Bạn chắc chắn muốn ẩn phim này?</p>
+            <h3 class="confirm-title" id="deleteConfirmTitle">Xác nhận Thao tác</h3>
+            <p class="confirm-desc" id="deleteConfirmDesc">Bạn có chắc chắn muốn thực hiện thao tác này?</p>
             <div class="confirm-actions">
                 <button type="button" class="confirm-btn cancel" onclick="hideDeleteConfirm()">Huỷ</button>
-                <button type="button" class="confirm-btn danger" onclick="submitDeleteForm()">Xác nhận</button>
+                <button type="button" class="confirm-btn danger" id="confirmSubmitBtn" onclick="submitDeleteForm()">Xác nhận</button>
             </div>
         </div>
     </div>

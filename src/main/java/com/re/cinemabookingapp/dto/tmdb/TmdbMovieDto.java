@@ -63,6 +63,9 @@ public class TmdbMovieDto {
     /** Videos (trailers) — chỉ có khi dùng append_to_response=videos */
     private TmdbVideosWrapper videos;
 
+    /** Credits (cast) — chỉ có khi dùng append_to_response=credits */
+    private TmdbCreditsWrapper credits;
+
     @Getter
     @Setter
     @NoArgsConstructor
@@ -70,6 +73,26 @@ public class TmdbMovieDto {
     public static class TmdbGenreDto {
         private Long id;
         private String name;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class TmdbCreditsWrapper {
+        private List<TmdbCastDto> cast;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class TmdbCastDto {
+        private Long id;
+        private String name;
+        @JsonProperty("original_name")
+        private String originalName;
+        private Integer order;
     }
 
     @Getter

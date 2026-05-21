@@ -26,6 +26,8 @@ public class MovieUpdateDto {
 
     private String trailerUrl;
 
+    private String actors;
+
     @NotNull(message = "Trạng thái không được để trống")
     private MovieStatus status;
 }

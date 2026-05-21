@@ -25,4 +25,7 @@ public interface MovieService {
 
     /** Xóa mềm (ACTIVE → INACTIVE) */
     void softDelete(Long id);
+
+    /** Bỏ ẩn (Khôi phục trạng thái ACTIVE/COMING_SOON) */
+    void restore(Long id);
 }
