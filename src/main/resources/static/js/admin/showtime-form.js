@@ -3,9 +3,9 @@
  * AJAX room schedule, confirm modal
  */
 document.addEventListener('DOMContentLoaded', () => {
+    const $$ = (selector) => document.querySelectorAll(selector);
 
-    // Auto-show flash toast messages
-    document.querySelectorAll('.toast-auto').forEach(el => {
+    $$('.toast-auto').forEach(el => {
         if (window.showToast) showToast(el.textContent, el.dataset.type);
         el.remove();
     });
@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const csrfToken = document.querySelector('meta[name="_csrf"]')?.content;
-        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;
+        const csrfHeader = document.querySelector('meta[name="_csrf_header"]')?.content;  // meta tags require querySelector
 
         const headers = {};
         if (csrfHeader && csrfToken) headers[csrfHeader] = csrfToken;
@@ -174,8 +174,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function clearAllErrors() {
-        document.querySelectorAll('.field-error').forEach(el => el.textContent = '');
-        document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+        $$('.field-error').forEach(el => el.textContent = '');
+        $$('.input-error').forEach(el => el.classList.remove('input-error'));
     }
 
     // Auto-clear error khi user thao tác vào input

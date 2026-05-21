@@ -136,19 +136,20 @@
     </div>
 
     <script>
-    var pendingCancelForm = null;
+    const $ = (id) => document.getElementById(id);
+    let pendingCancelForm = null;
 
     function showCancelModal(btn) {
         pendingCancelForm = btn.closest('form');
-        document.getElementById('cancelConfirmModal').classList.add('is-open');
+        $('cancelConfirmModal').classList.add('is-open');
     }
 
     function hideCancelModal() {
-        document.getElementById('cancelConfirmModal').classList.remove('is-open');
+        $('cancelConfirmModal').classList.remove('is-open');
         pendingCancelForm = null;
     }
 
-    document.getElementById('confirmCancelBtn').addEventListener('click', function() {
+    $('confirmCancelBtn').addEventListener('click', function() {
         if (pendingCancelForm) {
             pendingCancelForm.submit();
         }

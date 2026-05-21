@@ -32,4 +32,6 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
     Page<Movie> searchMovies(@Param("keyword") String keyword,
                              @Param("status") MovieStatus status,
                              Pageable pageable);
+
+    long countByStatus(MovieStatus status);
 }

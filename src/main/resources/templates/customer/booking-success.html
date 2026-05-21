@@ -141,14 +141,15 @@
     </form>
 
     <script>
+    const $ = (id) => document.getElementById(id);
     function showCancelConfirm() {
-        document.getElementById('cancelConfirmModal').classList.add('is-open');
+        $('cancelConfirmModal').classList.add('is-open');
     }
     function hideCancelConfirm() {
-        document.getElementById('cancelConfirmModal').classList.remove('is-open');
+        $('cancelConfirmModal').classList.remove('is-open');
     }
     function submitCancelForm() {
-        document.getElementById('cancelForm').submit();
+        $('cancelForm').submit();
     }
     </script>
 </main>

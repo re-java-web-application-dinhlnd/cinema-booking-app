@@ -1,12 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const seatGrid = document.getElementById('seatGrid');
-    const selectionEmpty = document.getElementById('selectionEmpty');
-    const selectionDetail = document.getElementById('selectionDetail');
-    const selectedSeatsText = document.getElementById('selectedSeatsText');
-    const selectedCount = document.getElementById('selectedCount');
-    const totalPriceEl = document.getElementById('totalPrice');
-    const seatIdsInput = document.getElementById('seatIdsInput');
-    const btnContinue = document.getElementById('btnContinue');
+    const $ = (id) => document.getElementById(id);
+
+    const seatGrid = $('seatGrid');
+    const selectionEmpty = $('selectionEmpty');
+    const selectionDetail = $('selectionDetail');
+    const selectedSeatsText = $('selectedSeatsText');
+    const selectedCount = $('selectedCount');
+    const totalPriceEl = $('totalPrice');
+    const seatIdsInput = $('seatIdsInput');
+    const btnContinue = $('btnContinue');
 
     if (!seatGrid || !SEAT_DATA || SEAT_DATA.length === 0) return;
 

@@ -25,12 +25,13 @@ function changeQty(btn, delta) {
 }
 
 function updateOrderSummary() {
+    const $ = (id) => document.getElementById(id);
     const cards = document.querySelectorAll('.product-card');
-    const productInputs = document.getElementById('productInputs');
-    const comboSection = document.getElementById('comboSummarySection');
-    const comboItemsList = document.getElementById('comboItemsList');
-    const comboTotalText = document.getElementById('comboTotalText');
-    const grandTotalText = document.getElementById('grandTotalText');
+    const productInputs = $('productInputs');
+    const comboSection = $('comboSummarySection');
+    const comboItemsList = $('comboItemsList');
+    const comboTotalText = $('comboTotalText');
+    const grandTotalText = $('grandTotalText');
 
     let comboTotal = 0;
     let inputsHtml = '';

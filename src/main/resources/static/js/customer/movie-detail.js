@@ -1,9 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const dateTabs = document.getElementById('dateTabs');
-    const showtimeContent = document.getElementById('showtimeContent');
-    const btnPrev = document.getElementById('datePrev');
-    const btnNext = document.getElementById('dateNext');
-    const movieId = document.getElementById('movieId')?.value;
+    const $ = (id) => document.getElementById(id);
+
+    const dateTabs = $('dateTabs');
+    const showtimeContent = $('showtimeContent');
+    const btnPrev = $('datePrev');
+    const btnNext = $('dateNext');
+    const movieId = $('movieId')?.value;
     if (!dateTabs || !movieId) return;
 
     const DAY_NAMES = ['CN', 'T.2', 'T.3', 'T.4', 'T.5', 'T.6', 'T.7'];

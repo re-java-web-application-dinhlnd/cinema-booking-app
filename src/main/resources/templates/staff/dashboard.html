@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>CineWave POS - Bán vé</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <link rel="stylesheet" th:href="@{/css/base.css}"/>
+    <link rel="stylesheet" th:href="@{/css/modal.css}"/>
+    <link rel="stylesheet" th:href="@{/css/staff/pos.css}"/>
+</head>
+<body>
+
+<div class="staff-topbar">
+    <div class="topbar-left">
+        <a href="/pos/dashboard" class="topbar-brand">
+            <img th:src="@{/assets/auth_logo.png}" alt="CineWave"/>
+            <span>CineWave <strong>POS</strong></span>
+        </a>
+    </div>
+    <div class="topbar-right">
+        <a href="/pos/dashboard" class="topbar-link active">
+            <i class="fa-solid fa-cash-register"></i> Bán vé
+        </a>
+        <a href="/pos/profile" class="topbar-link">
+            <i class="fa-solid fa-user-gear"></i> Hồ sơ
+        </a>
+        <button type="button" class="topbar-link logout-btn" onclick="showLogoutConfirm()">
+            <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+        </button>
+    </div>
+</div>
+
+<div class="pos-wrapper">
+    <div class="pos-header">
+        <h1 class="pos-title"><i class="fa-solid fa-magnifying-glass"></i> Tra cứu đơn đặt vé</h1>
+        <form class="pos-search-form" th:action="@{/pos/dashboard}" method="get">
+            <div class="search-input-wrap">
+                <i class="fa-solid fa-search search-icon"></i>
+                <input type="text" name="keyword" class="search-input"
+                       placeholder="Nhập mã đơn, tên khách hàng hoặc SĐT..."
+                       th:value="${keyword}" autocomplete="off" />
+            </div>
+            <button type="submit" class="search-btn">Tìm kiếm</button>
+        </form>
+    </div>
+
+    <div class="pos-results">
+        <div th:if="${bookings.isEmpty()}" class="pos-empty">
+            <i class="fa-regular fa-folder-open"></i>
+            <p th:if="${keyword != null && !keyword.isEmpty()}"
+               th:text="'Không tìm thấy kết quả cho: ' + ${keyword}">Không tìm thấy</p>
+            <p th:if="${keyword == null || keyword.isEmpty()}">Chưa có đơn đặt vé nào</p>
+        </div>
+
+        <table class="pos-table" th:if="${!bookings.isEmpty()}">
+            <thead>
+            <tr>
+                <th>Mã đơn</th>
+                <th>Khách hàng</th>
+                <th>SĐT</th>
+                <th>Phim</th>
+                <th>Suất chiếu</th>
+                <th>Ghế</th>
+                <th>Tổng tiền</th>
+                <th>Trạng thái</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="b : ${bookings}">
+                <td class="code-cell" th:text="${b.bookingCode}">ABC123</td>
+                <td th:text="${b.user?.userProfile?.fullName ?: 'N/A'}">Nguyễn Văn A</td>
+                <td th:text="${b.user?.userProfile?.phone ?: '---'}">0912345678</td>
+                <td class="movie-cell"
+                    th:text="${!b.tickets.isEmpty() ? b.tickets[0].showtime.movie.title : 'N/A'}">Movie</td>
+                <td th:if="${!b.tickets.isEmpty()}"
+                    th:text="${#dates.format(b.tickets[0].showtime.startTime, 'HH:mm dd/MM')}">14:00 20/05</td>
+                <td th:if="${b.tickets.isEmpty()}">---</td>
+                <td th:text="${b.tickets.size()} + ' ghế'">2 ghế</td>
+                <td class="amount-cell"
+                    th:text="${#numbers.formatDecimal(b.totalAmount, 0, 'COMMA', 0, 'POINT') + 'đ'}">155,000đ</td>
+                <td>
+                    <span class="pos-status"
+                          th:classappend="${b.status.name() == 'CONFIRMED' ? 'confirmed' :
+                                           (b.status.name() == 'CANCELLED' ? 'cancelled' :
+                                           (b.status.name() == 'CHECKED_IN' ? 'checked-in' : 'pending'))}"
+                          th:text="${b.status.name() == 'CONFIRMED' ? 'Xác nhận' :
+                                   (b.status.name() == 'CANCELLED' ? 'Đã hủy' :
+                                   (b.status.name() == 'CHECKED_IN' ? 'Đã check-in' : 'Chờ'))}">Status</span>
+                </td>
+                <td>
+                    <a th:href="@{'/pos/bookings/' + ${b.bookingCode}}" class="pos-view-btn">
+                        <i class="fa-solid fa-eye"></i>
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <div th:if="${bookings.totalPages > 1}" class="pos-pagination">
+            <a th:href="@{/pos/dashboard(keyword=${keyword}, page=${currentPage - 1})}"
+               th:classappend="${currentPage == 0 ? 'disabled' : ''}"
+               class="page-btn"><i class="fa-solid fa-chevron-left"></i></a>
+            <th:block th:each="i : ${#numbers.sequence(0, bookings.totalPages - 1)}">
+                <a th:href="@{/pos/dashboard(keyword=${keyword}, page=${i})}"
+                   class="page-btn" th:classappend="${i == currentPage ? 'active' : ''}"
+                   th:text="${i + 1}">1</a>
+            </th:block>
+            <a th:href="@{/pos/dashboard(keyword=${keyword}, page=${currentPage + 1})}"
+               th:classappend="${currentPage >= bookings.totalPages - 1 ? 'disabled' : ''}"
+               class="page-btn"><i class="fa-solid fa-chevron-right"></i></a>
+        </div>
+    </div>
+</div>
+
+<div id="logoutConfirm" class="confirm-overlay">
+    <div class="confirm-box">
+        <div class="confirm-icon"><i class="fa-solid fa-right-from-bracket"></i></div>
+        <h3 class="confirm-title">Đăng xuất?</h3>
+        <p class="confirm-desc">Bạn có chắc muốn đăng xuất?</p>
+        <div class="confirm-actions">
+            <button class="confirm-btn cancel" onclick="hideLogoutConfirm()">Huỷ</button>
+            <button class="confirm-btn danger" onclick="submitLogout()">Đăng xuất</button>
+        </div>
+    </div>
+</div>
+
+<form id="logoutForm" th:action="@{/logout}" method="post" hidden>
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+</form>
+
+<div id="toastContainer"></div>
+
+<script th:src="@{/js/global.js}"></script>
+<script th:src="@{/js/staff/pos.js}"></script>
+</body>
+</html>
