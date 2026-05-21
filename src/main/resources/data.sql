@@ -102,7 +102,7 @@ INSERT IGNORE INTO movies (tmdb_id, title, description, duration_minutes, releas
 (299534, 'Avengers: Endgame', 'Avengers tập hợp lại để đảo ngược hành động của Thanos và khôi phục trật tự vũ trụ.', 181, '2019-04-24', 'https://image.tmdb.org/t/p/w500/or06FN3Dka5tukK1e9sl16pB3iy.jpg', 'https://image.tmdb.org/t/p/w1280/7RyHsO4yDXtBv1zUU3mTpHeQ0d5.jpg', 'https://www.youtube.com/watch?v=TcMBFSGVi1c', 8.3, 'ACTIVE', NOW(), NOW()),
 (27205, 'Inception', 'Một tên trộm lành nghề chuyên đánh cắp bí mật qua giấc mơ được giao nhiệm vụ gieo rắc ý tưởng.', 148, '2010-07-15', 'https://image.tmdb.org/t/p/w500/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg', 'https://image.tmdb.org/t/p/w1280/8ZTVqvKDQ8emSGUEMjsS4yHAwrp.jpg', 'https://www.youtube.com/watch?v=YoHD9XEInc0', 8.4, 'ACTIVE', NOW(), NOW()),
 (634649, 'Spider-Man: No Way Home', 'Peter Parker đối mặt với kẻ thù từ đa vũ trụ khi danh tính bị lộ.', 148, '2021-12-15', 'https://image.tmdb.org/t/p/w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg', 'https://image.tmdb.org/t/p/w1280/14QbnygCuTO0vl7CAFmPf1fgZfV.jpg', 'https://www.youtube.com/watch?v=JfVOs4VSpmA', 8.0, 'ACTIVE', NOW(), NOW()),
-(155, 'The Dark Knight', 'Batman đối đầu Joker trong cuộc chiến bảo vệ Gotham City.', 152, '2008-07-16', 'https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg', 'https://image.tmdb.org/t/p/w1280/nMKdUUepR0i5zn0y1T4CsSB5ez.jpg', 'https://www.youtube.com/watch?v=EXeTwQWrcwY', 8.5, 'ACTIVE', NOW(), NOW()),
+(155, 'The Dark Knight', 'Batman đối đầu Joker trong cuộc chiến bảo vệ Gotham City.', 152, '2008-07-16', 'https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg', 'https://image.tmdb.org/t/p/w1280/qJ2tW6WMUDux911r6m7haRef0WH.jpg', 'https://www.youtube.com/watch?v=EXeTwQWrcwY', 8.5, 'ACTIVE', NOW(), NOW()),
 (693134, 'Dune: Part Two', 'Paul Atreides hợp nhất với người Fremen trả thù và đối mặt số phận vũ trụ.', 166, '2024-02-27', 'https://image.tmdb.org/t/p/w500/czembW0Rk1Ke7lCJGahbOhdCuhV.jpg', 'https://image.tmdb.org/t/p/w1280/xOMo8BRK7PfcJv9JCnx7s5hj0PX.jpg', 'https://www.youtube.com/watch?v=Way9Dexny3w', 8.2, 'ACTIVE', NOW(), NOW()),
 (872585, 'Oppenheimer', 'Câu chuyện về nhà vật lý phát triển bom nguyên tử và hậu quả thay đổi thế giới.', 180, '2023-07-19', 'https://image.tmdb.org/t/p/w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg', 'https://image.tmdb.org/t/p/w1280/fm6KqXpk3M2HVveHwCrBSSBaO0V.jpg', 'https://www.youtube.com/watch?v=uYPbbksJxIg', 8.1, 'ACTIVE', NOW(), NOW()),
 (1022789, 'Inside Out 2', 'Riley đối mặt cảm xúc mới tuổi dậy thì: Lo Âu, Ghen Tị, Chán Nản.', 100, '2024-06-11', 'https://image.tmdb.org/t/p/w500/vpnVM9B6NMmQpWeZvzLvDESb2QY.jpg', 'https://image.tmdb.org/t/p/w1280/xRd1eJIDe7JHO5u4gtEYwGn5wtf.jpg', 'https://www.youtube.com/watch?v=LEjhY15eCx0', 7.6, 'ACTIVE', NOW(), NOW()),
@@ -267,34 +267,187 @@ INSERT IGNORE INTO showtimes (movie_id, room_id, start_time, end_time, ticket_pr
 ((SELECT id FROM movies WHERE tmdb_id = 1022789), (SELECT id FROM rooms WHERE name='Phòng 2'), '2026-05-29 18:30:00', '2026-05-29 20:25:00', 60000, 'ACTIVE', NOW()),
 ((SELECT id FROM movies WHERE tmdb_id = 533535), (SELECT id FROM rooms WHERE name='Phòng 2'), '2026-05-29 21:00:00', '2026-05-29 23:23:00', 75000, 'ACTIVE', NOW());
 
+-- Phase B: Suất chiếu bổ sung cho các phim còn thiếu lịch
+INSERT IGNORE INTO showtimes (movie_id, room_id, start_time, end_time, ticket_price, status, created_at) VALUES
+-- John Wick 4 (169 phút)
+((SELECT id FROM movies WHERE tmdb_id = 603692), (SELECT id FROM rooms WHERE name='Phòng 3'), '2026-05-22 09:00:00', '2026-05-22 11:54:00', 70000, 'ACTIVE', NOW()),
+((SELECT id FROM movies WHERE tmdb_id = 603692), (SELECT id FROM rooms WHERE name='Phòng 3'), '2026-05-25 19:00:00', '2026-05-25 21:54:00', 85000, 'ACTIVE', NOW()),
+-- A Minecraft Movie (101 phút)
+((SELECT id FROM movies WHERE tmdb_id = 950387), (SELECT id FROM rooms WHERE name='Phòng 1'), '2026-05-23 09:00:00', '2026-05-23 10:56:00', 55000, 'ACTIVE', NOW()),
+((SELECT id FROM movies WHERE tmdb_id = 950387), (SELECT id FROM rooms WHERE name='Phòng 2'), '2026-05-26 14:00:00', '2026-05-26 15:56:00', 55000, 'ACTIVE', NOW()),
+-- Gladiator II (148 phút)
+((SELECT id FROM movies WHERE tmdb_id = 558449), (SELECT id FROM rooms WHERE name='Phòng 1'), '2026-05-24 09:00:00', '2026-05-24 11:43:00', 80000, 'ACTIVE', NOW()),
+((SELECT id FROM movies WHERE tmdb_id = 558449), (SELECT id FROM rooms WHERE name='Phòng 3'), '2026-05-27 19:00:00', '2026-05-27 21:43:00', 85000, 'ACTIVE', NOW()),
+-- Joker (122 phút)
+((SELECT id FROM movies WHERE tmdb_id = 475557), (SELECT id FROM rooms WHERE name='Phòng 2'), '2026-05-23 09:00:00', '2026-05-23 11:07:00', 65000, 'ACTIVE', NOW()),
+((SELECT id FROM movies WHERE tmdb_id = 475557), (SELECT id FROM rooms WHERE name='Phòng 1'), '2026-05-28 19:00:00', '2026-05-28 21:07:00', 80000, 'ACTIVE', NOW()),
+-- The Godfather (175 phút)
+((SELECT id FROM movies WHERE tmdb_id = 238), (SELECT id FROM rooms WHERE name='Phòng 3'), '2026-05-23 13:00:00', '2026-05-23 15:55:00', 65000, 'ACTIVE', NOW()),
+-- Pulp Fiction (154 phút)
+((SELECT id FROM movies WHERE tmdb_id = 680), (SELECT id FROM rooms WHERE name='Phòng 3'), '2026-05-24 13:00:00', '2026-05-24 15:39:00', 65000, 'ACTIVE', NOW()),
+-- The Matrix (136 phút)
+((SELECT id FROM movies WHERE tmdb_id = 603), (SELECT id FROM rooms WHERE name='Phòng 2'), '2026-05-24 09:00:00', '2026-05-24 11:21:00', 60000, 'ACTIVE', NOW()),
+((SELECT id FROM movies WHERE tmdb_id = 603), (SELECT id FROM rooms WHERE name='Phòng 1'), '2026-05-27 09:00:00', '2026-05-27 11:21:00', 60000, 'ACTIVE', NOW()),
+-- LOTR: Return of the King (201 phút)
+((SELECT id FROM movies WHERE tmdb_id = 122), (SELECT id FROM rooms WHERE name='Phòng 1'), '2026-05-25 09:00:00', '2026-05-25 12:26:00', 75000, 'ACTIVE', NOW()),
+-- Star Wars (121 phút)
+((SELECT id FROM movies WHERE tmdb_id = 11), (SELECT id FROM rooms WHERE name='Phòng 2'), '2026-05-25 09:00:00', '2026-05-25 11:06:00', 55000, 'ACTIVE', NOW()),
+((SELECT id FROM movies WHERE tmdb_id = 11), (SELECT id FROM rooms WHERE name='Phòng 3'), '2026-05-28 09:00:00', '2026-05-28 11:06:00', 55000, 'ACTIVE', NOW());
+
 -- ============================================
 -- BOOKINGS & TICKETS SEED (Demo Data)
 -- ============================================
 INSERT IGNORE INTO bookings (booking_code, user_id, booking_date, total_amount, status) VALUES
+-- Đơn cũ đã check-in (20/05)
+('BKG200520261', (SELECT id FROM users WHERE username='customer02'), '2026-05-20 18:00:00', 95000, 'CHECKED_IN'),
+-- Đơn hôm nay đã xác nhận (test check-in tại POS)
 ('BKG210520261', (SELECT id FROM users WHERE username='customer01'), '2026-05-21 08:30:00', 130000, 'CONFIRMED'),
-('BKG210520262', (SELECT id FROM users WHERE username='customer02'), '2026-05-21 09:15:00', 215000, 'CONFIRMED'),
+-- Đơn hôm nay + combo (VIP seats)
+('BKG210520262', (SELECT id FROM users WHERE username='customer02'), '2026-05-21 09:15:00', 217000, 'CONFIRMED'),
+-- Đơn đã hủy (test nghiệp vụ hủy)
+('BKG210520263', (SELECT id FROM users WHERE username='customer01'), '2026-05-21 07:00:00', 80000, 'CANCELLED'),
+-- Đơn ngày mai (test booking sắp tới)
 ('BKG220520261', (SELECT id FROM users WHERE username='customer03'), '2026-05-22 10:00:00', 380000, 'CONFIRMED'),
-('BKG230520261', (SELECT id FROM users WHERE username='customer01'), '2026-05-23 07:00:00', 80000, 'CANCELLED'),
-('BKG200520261', (SELECT id FROM users WHERE username='customer02'), '2026-05-20 18:00:00', 95000, 'CHECKED_IN');
+-- Đơn cuối tuần VIP (test giá VIP)
+('BKG230520261', (SELECT id FROM users WHERE username='customer01'), '2026-05-23 06:00:00', 143000, 'CONFIRMED'),
+-- Đơn check-in rồi (staff đã quét)
+('BKG230520262', (SELECT id FROM users WHERE username='customer02'), '2026-05-23 08:00:00', 160000, 'CHECKED_IN'),
+-- Đơn combo gia đình
+('BKG240520261', (SELECT id FROM users WHERE username='customer01'), '2026-05-24 07:30:00', 319000, 'CONFIRMED');
 
--- TICKETS for BKG210520261 (Customer 01, Showtime: Inception 21/05 10:00, 2 vé Standard = 130k)
+-- TICKETS for BKG210520261 (Inception 21/05 10:00, 2 ghế Standard)
 INSERT IGNORE INTO tickets (booking_id, showtime_id, seat_id, price) VALUES
-((SELECT id FROM bookings WHERE booking_code='BKG210520261'), 
+((SELECT id FROM bookings WHERE booking_code='BKG210520261'),
  (SELECT id FROM showtimes WHERE start_time='2026-05-21 10:00:00' LIMIT 1),
  (SELECT id FROM seats WHERE seat_name='D4' AND room_id=(SELECT id FROM rooms WHERE name='Phòng 1')), 65000),
-((SELECT id FROM bookings WHERE booking_code='BKG210520261'), 
+((SELECT id FROM bookings WHERE booking_code='BKG210520261'),
  (SELECT id FROM showtimes WHERE start_time='2026-05-21 10:00:00' LIMIT 1),
  (SELECT id FROM seats WHERE seat_name='D5' AND room_id=(SELECT id FROM rooms WHERE name='Phòng 1')), 65000);
 
--- TICKETS for BKG210520262 (Customer 02, Showtime: Spider-Man 21/05 14:00, 2 vé VIP = 182k + Combo = 215k)
+-- TICKETS for BKG210520262 (Spider-Man 21/05 14:00, 2 ghế VIP = base×1.3)
 INSERT IGNORE INTO tickets (booking_id, showtime_id, seat_id, price) VALUES
-((SELECT id FROM bookings WHERE booking_code='BKG210520262'), 
+((SELECT id FROM bookings WHERE booking_code='BKG210520262'),
  (SELECT id FROM showtimes WHERE start_time='2026-05-21 14:00:00' LIMIT 1),
  (SELECT id FROM seats WHERE seat_name='E5' AND room_id=(SELECT id FROM rooms WHERE name='Phòng 1')), 91000),
-((SELECT id FROM bookings WHERE booking_code='BKG210520262'), 
+((SELECT id FROM bookings WHERE booking_code='BKG210520262'),
  (SELECT id FROM showtimes WHERE start_time='2026-05-21 14:00:00' LIMIT 1),
  (SELECT id FROM seats WHERE seat_name='E6' AND room_id=(SELECT id FROM rooms WHERE name='Phòng 1')), 91000);
 
--- BOOKING_PRODUCTS for BKG210520262
+-- BOOKING_PRODUCTS for BKG210520262 (combo bắp)
 INSERT IGNORE INTO booking_products (booking_id, product_id, quantity, price) VALUES
 ((SELECT id FROM bookings WHERE booking_code='BKG210520262'), (SELECT id FROM products WHERE name='Bắp Rang Bơ (Nhỏ)'), 1, 35000);
+
+-- TICKETS for BKG230520261 (Joker 23/05 09:00, 1 ghế VIP + 1 Standard)
+INSERT IGNORE INTO tickets (booking_id, showtime_id, seat_id, price) VALUES
+((SELECT id FROM bookings WHERE booking_code='BKG230520261'),
+ (SELECT id FROM showtimes WHERE start_time='2026-05-23 09:00:00' AND movie_id=(SELECT id FROM movies WHERE tmdb_id=475557) LIMIT 1),
+ (SELECT id FROM seats WHERE seat_name='A1' AND room_id=(SELECT id FROM rooms WHERE name='Phòng 2')), 65000),
+((SELECT id FROM bookings WHERE booking_code='BKG230520261'),
+ (SELECT id FROM showtimes WHERE start_time='2026-05-23 09:00:00' AND movie_id=(SELECT id FROM movies WHERE tmdb_id=475557) LIMIT 1),
+ (SELECT id FROM seats WHERE seat_name='E1' AND room_id=(SELECT id FROM rooms WHERE name='Phòng 2')), 78000);
+
+-- TICKETS for BKG240520261 (Matrix 24/05 09:00, 2 ghế Standard)
+INSERT IGNORE INTO tickets (booking_id, showtime_id, seat_id, price) VALUES
+((SELECT id FROM bookings WHERE booking_code='BKG240520261'),
+ (SELECT id FROM showtimes WHERE start_time='2026-05-24 09:00:00' AND movie_id=(SELECT id FROM movies WHERE tmdb_id=603) LIMIT 1),
+ (SELECT id FROM seats WHERE seat_name='C3' AND room_id=(SELECT id FROM rooms WHERE name='Phòng 2')), 60000),
+((SELECT id FROM bookings WHERE booking_code='BKG240520261'),
+ (SELECT id FROM showtimes WHERE start_time='2026-05-24 09:00:00' AND movie_id=(SELECT id FROM movies WHERE tmdb_id=603) LIMIT 1),
+ (SELECT id FROM seats WHERE seat_name='C4' AND room_id=(SELECT id FROM rooms WHERE name='Phòng 2')), 60000);
+
+-- BOOKING_PRODUCTS for BKG240520261 (Combo Gia Đình)
+INSERT IGNORE INTO booking_products (booking_id, product_id, quantity, price) VALUES
+((SELECT id FROM bookings WHERE booking_code='BKG240520261'), (SELECT id FROM products WHERE name='Combo Gia Đình'), 1, 159000),
+((SELECT id FROM bookings WHERE booking_code='BKG240520261'), (SELECT id FROM products WHERE name='Nước Ngọt (Coca-Cola)'), 2, 20000);
+
+-- ============================================
+-- THÊM BOOKINGS ĐA DẠNG CHO DEMO
+-- ============================================
+
+-- [DEMO 1] Customer02 đặt John Wick 4 ngày 22/05, 3 ghế (nhóm bạn)
+INSERT IGNORE INTO bookings (booking_code, user_id, booking_date, total_amount, status) VALUES
+('BKG220520262', (SELECT id FROM users WHERE username='customer02'), '2026-05-22 07:00:00', 210000, 'CONFIRMED');
+INSERT IGNORE INTO tickets (booking_id, showtime_id, seat_id, price) VALUES
+((SELECT id FROM bookings WHERE booking_code='BKG220520262'),
+ (SELECT id FROM showtimes WHERE start_time='2026-05-22 09:00:00' AND movie_id=(SELECT id FROM movies WHERE tmdb_id=603692) LIMIT 1),
+ (SELECT id FROM seats WHERE seat_name='B3' AND room_id=(SELECT id FROM rooms WHERE name='Phòng 3')), 70000),
+((SELECT id FROM bookings WHERE booking_code='BKG220520262'),
+ (SELECT id FROM showtimes WHERE start_time='2026-05-22 09:00:00' AND movie_id=(SELECT id FROM movies WHERE tmdb_id=603692) LIMIT 1),
+ (SELECT id FROM seats WHERE seat_name='B4' AND room_id=(SELECT id FROM rooms WHERE name='Phòng 3')), 70000),
+((SELECT id FROM bookings WHERE booking_code='BKG220520262'),
+ (SELECT id FROM showtimes WHERE start_time='2026-05-22 09:00:00' AND movie_id=(SELECT id FROM movies WHERE tmdb_id=603692) LIMIT 1),
+ (SELECT id FROM seats WHERE seat_name='B5' AND room_id=(SELECT id FROM rooms WHERE name='Phòng 3')), 70000);
+
+-- [DEMO 2] Customer03 đặt The Godfather 23/05, 2 ghế VIP + Combo Đôi
+INSERT IGNORE INTO bookings (booking_code, user_id, booking_date, total_amount, status) VALUES
+('BKG230520263', (SELECT id FROM users WHERE username='customer03'), '2026-05-23 10:00:00', 258000, 'CONFIRMED');
+INSERT IGNORE INTO tickets (booking_id, showtime_id, seat_id, price) VALUES
+((SELECT id FROM bookings WHERE booking_code='BKG230520263'),
+ (SELECT id FROM showtimes WHERE start_time='2026-05-23 13:00:00' AND movie_id=(SELECT id FROM movies WHERE tmdb_id=238) LIMIT 1),
+ (SELECT id FROM seats WHERE seat_name='E3' AND room_id=(SELECT id FROM rooms WHERE name='Phòng 3')), 84500),
+((SELECT id FROM bookings WHERE booking_code='BKG230520263'),
+ (SELECT id FROM showtimes WHERE start_time='2026-05-23 13:00:00' AND movie_id=(SELECT id FROM movies WHERE tmdb_id=238) LIMIT 1),
+ (SELECT id FROM seats WHERE seat_name='E4' AND room_id=(SELECT id FROM rooms WHERE name='Phòng 3')), 84500);
+INSERT IGNORE INTO booking_products (booking_id, product_id, quantity, price) VALUES
+((SELECT id FROM bookings WHERE booking_code='BKG230520263'), (SELECT id FROM products WHERE name='Combo Đôi'), 1, 89000);
+
+-- [DEMO 3] Customer01 đặt Gladiator II 24/05, 2 ghế Sweetbox (hàng F, giá base×1.5)
+INSERT IGNORE INTO bookings (booking_code, user_id, booking_date, total_amount, status) VALUES
+('BKG240520262', (SELECT id FROM users WHERE username='customer01'), '2026-05-24 06:30:00', 240000, 'CONFIRMED');
+INSERT IGNORE INTO tickets (booking_id, showtime_id, seat_id, price) VALUES
+((SELECT id FROM bookings WHERE booking_code='BKG240520262'),
+ (SELECT id FROM showtimes WHERE start_time='2026-05-24 09:00:00' AND movie_id=(SELECT id FROM movies WHERE tmdb_id=558449) LIMIT 1),
+ (SELECT id FROM seats WHERE seat_name='F5' AND room_id=(SELECT id FROM rooms WHERE name='Phòng 1')), 120000),
+((SELECT id FROM bookings WHERE booking_code='BKG240520262'),
+ (SELECT id FROM showtimes WHERE start_time='2026-05-24 09:00:00' AND movie_id=(SELECT id FROM movies WHERE tmdb_id=558449) LIMIT 1),
+ (SELECT id FROM seats WHERE seat_name='F6' AND room_id=(SELECT id FROM rooms WHERE name='Phòng 1')), 120000);
+
+-- [DEMO 4] Customer02 đã hủy vé Star Wars 25/05 (test hiển thị đơn hủy)
+INSERT IGNORE INTO bookings (booking_code, user_id, booking_date, total_amount, status) VALUES
+('BKG250520261', (SELECT id FROM users WHERE username='customer02'), '2026-05-25 06:00:00', 110000, 'CANCELLED');
+
+-- [DEMO 5] Customer03 đặt Minecraft 23/05, 4 ghế (gia đình) + Combo Gia Đình
+INSERT IGNORE INTO bookings (booking_code, user_id, booking_date, total_amount, status) VALUES
+('BKG230520264', (SELECT id FROM users WHERE username='customer03'), '2026-05-23 07:30:00', 434000, 'CONFIRMED');
+INSERT IGNORE INTO tickets (booking_id, showtime_id, seat_id, price) VALUES
+((SELECT id FROM bookings WHERE booking_code='BKG230520264'),
+ (SELECT id FROM showtimes WHERE start_time='2026-05-23 09:00:00' AND movie_id=(SELECT id FROM movies WHERE tmdb_id=950387) LIMIT 1),
+ (SELECT id FROM seats WHERE seat_name='A3' AND room_id=(SELECT id FROM rooms WHERE name='Phòng 1')), 55000),
+((SELECT id FROM bookings WHERE booking_code='BKG230520264'),
+ (SELECT id FROM showtimes WHERE start_time='2026-05-23 09:00:00' AND movie_id=(SELECT id FROM movies WHERE tmdb_id=950387) LIMIT 1),
+ (SELECT id FROM seats WHERE seat_name='A4' AND room_id=(SELECT id FROM rooms WHERE name='Phòng 1')), 55000),
+((SELECT id FROM bookings WHERE booking_code='BKG230520264'),
+ (SELECT id FROM showtimes WHERE start_time='2026-05-23 09:00:00' AND movie_id=(SELECT id FROM movies WHERE tmdb_id=950387) LIMIT 1),
+ (SELECT id FROM seats WHERE seat_name='A5' AND room_id=(SELECT id FROM rooms WHERE name='Phòng 1')), 55000),
+((SELECT id FROM bookings WHERE booking_code='BKG230520264'),
+ (SELECT id FROM showtimes WHERE start_time='2026-05-23 09:00:00' AND movie_id=(SELECT id FROM movies WHERE tmdb_id=950387) LIMIT 1),
+ (SELECT id FROM seats WHERE seat_name='A6' AND room_id=(SELECT id FROM rooms WHERE name='Phòng 1')), 55000);
+INSERT IGNORE INTO booking_products (booking_id, product_id, quantity, price) VALUES
+((SELECT id FROM bookings WHERE booking_code='BKG230520264'), (SELECT id FROM products WHERE name='Combo Gia Đình'), 1, 159000),
+((SELECT id FROM bookings WHERE booking_code='BKG230520264'), (SELECT id FROM products WHERE name='Bắp Rang Bơ (Nhỏ)'), 1, 35000);
+
+-- [DEMO 6] Customer01 đã check-in LOTR 25/05 + Combo Đôi (staff đã quét QR)
+INSERT IGNORE INTO bookings (booking_code, user_id, booking_date, total_amount, status) VALUES
+('BKG250520262', (SELECT id FROM users WHERE username='customer01'), '2026-05-25 07:00:00', 239000, 'CHECKED_IN');
+INSERT IGNORE INTO tickets (booking_id, showtime_id, seat_id, price) VALUES
+((SELECT id FROM bookings WHERE booking_code='BKG250520262'),
+ (SELECT id FROM showtimes WHERE start_time='2026-05-25 09:00:00' AND movie_id=(SELECT id FROM movies WHERE tmdb_id=122) LIMIT 1),
+ (SELECT id FROM seats WHERE seat_name='D1' AND room_id=(SELECT id FROM rooms WHERE name='Phòng 1')), 75000),
+((SELECT id FROM bookings WHERE booking_code='BKG250520262'),
+ (SELECT id FROM showtimes WHERE start_time='2026-05-25 09:00:00' AND movie_id=(SELECT id FROM movies WHERE tmdb_id=122) LIMIT 1),
+ (SELECT id FROM seats WHERE seat_name='D2' AND room_id=(SELECT id FROM rooms WHERE name='Phòng 1')), 75000);
+INSERT IGNORE INTO booking_products (booking_id, product_id, quantity, price) VALUES
+((SELECT id FROM bookings WHERE booking_code='BKG250520262'), (SELECT id FROM products WHERE name='Combo Đôi'), 1, 89000);
+
+-- [DEMO 7] Customer02 đặt Pulp Fiction 24/05 (đơn sắp tới, chưa check-in)
+INSERT IGNORE INTO bookings (booking_code, user_id, booking_date, total_amount, status) VALUES
+('BKG240520263', (SELECT id FROM users WHERE username='customer02'), '2026-05-24 11:00:00', 165000, 'CONFIRMED');
+INSERT IGNORE INTO tickets (booking_id, showtime_id, seat_id, price) VALUES
+((SELECT id FROM bookings WHERE booking_code='BKG240520263'),
+ (SELECT id FROM showtimes WHERE start_time='2026-05-24 13:00:00' AND movie_id=(SELECT id FROM movies WHERE tmdb_id=680) LIMIT 1),
+ (SELECT id FROM seats WHERE seat_name='C5' AND room_id=(SELECT id FROM rooms WHERE name='Phòng 3')), 65000),
+((SELECT id FROM bookings WHERE booking_code='BKG240520263'),
+ (SELECT id FROM showtimes WHERE start_time='2026-05-24 13:00:00' AND movie_id=(SELECT id FROM movies WHERE tmdb_id=680) LIMIT 1),
+ (SELECT id FROM seats WHERE seat_name='C6' AND room_id=(SELECT id FROM rooms WHERE name='Phòng 3')), 65000);
+INSERT IGNORE INTO booking_products (booking_id, product_id, quantity, price) VALUES
+((SELECT id FROM bookings WHERE booking_code='BKG240520263'), (SELECT id FROM products WHERE name='Bắp Rang Bơ (Nhỏ)'), 2, 35000);
