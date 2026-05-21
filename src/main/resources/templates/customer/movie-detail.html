@@ -82,7 +82,7 @@
                         <button th:each="s : ${showtimes}"
                                 class="showtime-chip"
                                 sec:authorize="!isAuthenticated()"
-                                onclick="openModal('loginView')">
+                                th:onclick="|sessionStorage.setItem('redirectAfterLogin', '/booking/seats?showtimeId=${s.id}'); openModal('loginView')|">
                             <span class="chip-time"
                                   th:text="${#dates.format(s.startTime, 'HH:mm')}">19:30</span>
                             <span class="chip-room" th:text="${s.room.name}">Phòng 1</span>

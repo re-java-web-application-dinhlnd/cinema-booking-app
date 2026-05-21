@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (isAuth) {
                 html += '<a href="/booking/seats?showtimeId=' + s.id + '" class="showtime-chip"><span class="chip-time">' + s.startTime + '</span>' + roomHtml + badge + '</a>';
             } else {
-                html += '<button class="showtime-chip" onclick="openModal(\'loginView\')"><span class="chip-time">' + s.startTime + '</span>' + roomHtml + badge + '</button>';
+                html += '<button class="showtime-chip" onclick="sessionStorage.setItem(\'redirectAfterLogin\', \'/booking/seats?showtimeId=' + s.id + '\'); openModal(\'loginView\')"><span class="chip-time">' + s.startTime + '</span>' + roomHtml + badge + '</button>';
             }
         });
 

@@ -93,7 +93,15 @@ function handleLoginSubmit(event) {
         .then(({ body }) => {
             if (body.success) {
                 showToast('Đăng nhập thành công! Đang tải...', true);
-                setTimeout(() => window.location.reload(), 1200);
+                const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
+                if (redirectUrl) {
+                    sessionStorage.removeItem('redirectAfterLogin');
+                    setTimeout(() => {
+                        window.location.href = redirectUrl;
+                    }, 1200);
+                } else {
+                    setTimeout(() => window.location.reload(), 1200);
+                }
             } else {
                 showToast(body.message ?? 'Sai tài khoản hoặc mật khẩu!', false);
             }

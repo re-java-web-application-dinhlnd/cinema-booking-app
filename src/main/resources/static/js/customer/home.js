@@ -191,7 +191,14 @@ function initQuickFilter() {
     submitBtn.addEventListener('click', () => {
         const showtimeId = showtimeSelect.value;
         if (showtimeId) {
-            window.location.href = '/booking/seats?showtimeId=' + showtimeId;
+            const isAuth = document.querySelector('.user-menu-wrapper') !== null;
+            const targetUrl = '/booking/seats?showtimeId=' + showtimeId;
+            if (isAuth) {
+                window.location.href = targetUrl;
+            } else {
+                sessionStorage.setItem('redirectAfterLogin', targetUrl);
+                openModal('loginView');
+            }
         }
     });
 }
