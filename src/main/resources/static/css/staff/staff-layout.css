@@ -1,0 +1,88 @@
+/* ========================================
+   Staff Layout — Topbar & Base
+   ======================================== */
+body {
+    margin: 0;
+    font-family: "Inter", sans-serif;
+    background-color: #F8FAFC;
+    min-height: 100vh;
+}
+
+.staff-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 30px;
+    height: 64px;
+    background: linear-gradient(135deg, #4C1D95, #6D28D9);
+    box-shadow: 0 4px 12px rgba(76, 29, 149, 0.2);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.topbar-left {
+    display: flex;
+    align-items: center;
+}
+
+.topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: white;
+    font-size: 16px;
+}
+
+.topbar-brand img {
+    height: 32px;
+}
+
+.topbar-brand strong {
+    color: #C4B5FD;
+}
+
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.topbar-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    color: #C4B5FD;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.2s;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.topbar-link:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.topbar-link.active {
+    color: white;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.topbar-link.logout-btn:hover {
+    color: #FCA5A5;
+    background: rgba(252, 165, 165, 0.1);
+}
+
+@media (max-width: 768px) {
+    .topbar-right {
+        gap: 2px;
+    }
+}
