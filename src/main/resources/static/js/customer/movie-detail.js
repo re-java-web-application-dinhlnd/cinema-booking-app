@@ -115,12 +115,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 badge = '<span class="chip-badge low-seats">Còn ' + s.availableSeats + ' ghế</span>';
             }
 
+            const roomHtml = '<span class="chip-room">' + s.roomName + '</span>';
             if (isSoldOut) {
-                html += '<div class="showtime-chip disabled"><span class="chip-time">' + s.startTime + '</span>' + badge + '</div>';
+                html += '<div class="showtime-chip disabled"><span class="chip-time">' + s.startTime + '</span>' + roomHtml + badge + '</div>';
             } else if (isAuth) {
-                html += '<a href="/booking/seats?showtimeId=' + s.id + '" class="showtime-chip"><span class="chip-time">' + s.startTime + '</span>' + badge + '</a>';
+                html += '<a href="/booking/seats?showtimeId=' + s.id + '" class="showtime-chip"><span class="chip-time">' + s.startTime + '</span>' + roomHtml + badge + '</a>';
             } else {
-                html += '<button class="showtime-chip" onclick="openModal(\'loginView\')"><span class="chip-time">' + s.startTime + '</span>' + badge + '</button>';
+                html += '<button class="showtime-chip" onclick="openModal(\'loginView\')"><span class="chip-time">' + s.startTime + '</span>' + roomHtml + badge + '</button>';
             }
         });
 

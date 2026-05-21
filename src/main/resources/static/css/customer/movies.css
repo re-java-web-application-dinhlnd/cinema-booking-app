@@ -780,6 +780,13 @@
   font-weight: 600;
 }
 
+.chip-room {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  margin-top: -1px;
+}
+
 .chip-badge {
   font-size: 0.6rem;
   font-weight: 700;

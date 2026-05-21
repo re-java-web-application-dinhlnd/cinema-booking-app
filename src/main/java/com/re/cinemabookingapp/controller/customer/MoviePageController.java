@@ -76,6 +76,7 @@ public class MoviePageController {
                     Map<String, Object> m = new HashMap<>();
                     m.put("id", s.getId());
                     m.put("startTime", s.getStartTime().toLocalDateTime().toLocalTime().toString().substring(0, 5));
+                    m.put("roomName", s.getRoom().getName());
                     m.put("availableSeats", availableSeats);
                     m.put("totalSeats", totalSeats);
                     m.put("soldOut", availableSeats <= 0);

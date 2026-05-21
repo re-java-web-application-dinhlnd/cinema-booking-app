@@ -77,6 +77,7 @@
                            sec:authorize="isAuthenticated()">
                             <span class="chip-time"
                                   th:text="${#dates.format(s.startTime, 'HH:mm')}">19:30</span>
+                            <span class="chip-room" th:text="${s.room.name}">Phòng 1</span>
                         </a>
                         <button th:each="s : ${showtimes}"
                                 class="showtime-chip"
@@ -84,6 +85,7 @@
                                 onclick="openModal('loginView')">
                             <span class="chip-time"
                                   th:text="${#dates.format(s.startTime, 'HH:mm')}">19:30</span>
+                            <span class="chip-room" th:text="${s.room.name}">Phòng 1</span>
                         </button>
                     </div>
                     <div th:if="${showtimes == null || showtimes.isEmpty()}" class="no-showtimes">
