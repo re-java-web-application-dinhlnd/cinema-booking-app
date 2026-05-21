@@ -1,4 +1,4 @@
-const $ = (id) => document.getElementById(id);
+
 
 function showCheckInConfirm() {
     const modal = $('checkInConfirm');

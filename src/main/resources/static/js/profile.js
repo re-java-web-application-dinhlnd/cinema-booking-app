@@ -1,5 +1,4 @@
-const $ = (id) => document.getElementById(id);
-const $$ = (selector) => document.querySelectorAll(selector);
+
 
 function switchTab(tabId) {
     $$('.nav-btn').forEach(btn => btn.classList.remove('active'));

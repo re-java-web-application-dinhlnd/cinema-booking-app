@@ -1,4 +1,4 @@
-const $ = (id) => document.getElementById(id);
+
 
 function extractYoutubeId(url) {
     if (!url) return null;
