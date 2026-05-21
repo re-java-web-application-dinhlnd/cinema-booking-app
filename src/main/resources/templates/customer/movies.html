@@ -6,10 +6,59 @@
 <body>
 <main>
     <link rel="stylesheet" th:href="@{/css/customer/movies.css}" />
+
+    <section class="banner-carousel" id="bannerCarousel">
+        <button class="banner-nav prev" id="bannerPrev"><i class="fa-solid fa-chevron-left"></i></button>
+        <div class="banner-viewport">
+            <div class="banner-track" id="bannerTrack">
+                <div class="banner-slide">
+                    <img th:src="@{/assets/banner-2048-x-682_1778665576842.jpg}" alt="Banner 1"/>
+                </div>
+                <div class="banner-slide">
+                    <img th:src="@{/assets/mot-thoi-ta-da-yeu-2048_1778659515050.jpg}" alt="Banner 2"/>
+                </div>
+                <div class="banner-slide">
+                    <img th:src="@{/assets/doraemon-the-movie-new-nobita-and-the-castle-of-the-undersea-devil-3_1778470910583.jpg}" alt="Banner 3"/>
+                </div>
+            </div>
+        </div>
+        <button class="banner-nav next" id="bannerNext"><i class="fa-solid fa-chevron-right"></i></button>
+        <div class="banner-dots" id="bannerDots"></div>
+    </section>
+
+    <section class="quick-filter" id="quickFilter">
+        <div class="filter-inner">
+            <div class="filter-step">
+                <span class="filter-step-num">1</span>
+                <select id="filterMovie" class="filter-select">
+                    <option value="">Chọn Phim</option>
+                    <option th:each="m : ${movies}" th:value="${m.id}" th:text="${m.title}">Movie</option>
+                </select>
+            </div>
+            <div class="filter-divider"></div>
+            <div class="filter-step">
+                <span class="filter-step-num">2</span>
+                <select id="filterDate" class="filter-select" disabled>
+                    <option value="">Chọn Ngày</option>
+                </select>
+            </div>
+            <div class="filter-divider"></div>
+            <div class="filter-step">
+                <span class="filter-step-num">3</span>
+                <select id="filterShowtime" class="filter-select" disabled>
+                    <option value="">Chọn Suất</option>
+                </select>
+            </div>
+            <button class="filter-submit" id="filterSubmit" disabled>
+                <i class="fa-solid fa-bolt"></i> Mua vé nhanh
+            </button>
+        </div>
+    </section>
+
     <div class="movies-page">
         <div class="movies-container">
 
-            <div class="movies-tabs">
+            <div class="movies-tabs" id="now-showing">
                 <a th:href="@{/movies?tab=now}"
                    th:classappend="${tab == 'now' ? 'active' : ''}"
                    class="tab-item">Đang chiếu</a>
@@ -51,7 +100,7 @@
                                     <i class="fa-regular fa-clock"></i>
                                     <span th:text="${movie.durationMinutes + ' phút'}"></span>
                                 </span>
-                                <span th:if="${movie.genres != null && !movie.genres.isEmpty()}"
+                                <span th:if="${movie.genres != null and !movie.genres.isEmpty()}"
                                       class="movie-genre"
                                       th:text="${movie.genres[0].name}"></span>
                             </div>
@@ -81,6 +130,7 @@
     </div>
 
     <script th:src="@{/js/customer/movies.js}"></script>
+    <script th:src="@{/js/customer/home.js}"></script>
 </main>
 </body>
 </html>

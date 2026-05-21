@@ -1,8 +1,8 @@
 package com.re.cinemabookingapp.controller.customer;
 
+
 import com.re.cinemabookingapp.entity.Movie;
 import com.re.cinemabookingapp.entity.Showtime;
-import com.re.cinemabookingapp.enums.MovieStatus;
 import com.re.cinemabookingapp.repository.MovieRepository;
 import com.re.cinemabookingapp.repository.SeatRepository;
 import com.re.cinemabookingapp.repository.ShowtimeRepository;
@@ -34,14 +34,7 @@ public class MoviePageController {
     private final SeatRepository seatRepository;
     private final TicketRepository ticketRepository;
 
-    @GetMapping("/movies")
-    public String moviesPage(@RequestParam(defaultValue = "now") String tab, Model model) {
-        MovieStatus status = "coming".equals(tab) ? MovieStatus.COMING_SOON : MovieStatus.ACTIVE;
-        List<Movie> movies = movieRepository.findByStatusIn(List.of(status));
-        model.addAttribute("movies", movies);
-        model.addAttribute("tab", tab);
-        return "customer/movies";
-    }
+
 
     @GetMapping("/movies/{id}")
     public String movieDetail(@PathVariable Long id, Model model) {

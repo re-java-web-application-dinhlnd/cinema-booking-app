@@ -49,6 +49,7 @@ public class MovieServiceImpl implements MovieService {
         movie.setDescription(detail.getOverview());
         movie.setDurationMinutes(detail.getRuntime() != null ? detail.getRuntime() : 120);
         movie.setPosterUrl(tmdbService.buildPosterUrl(detail.getPosterPath()));
+        movie.setBackdropUrl(tmdbService.buildPosterUrl(detail.getBackdropPath()));
         movie.setVoteAverage(detail.getVoteAverage());
 
         // Parse release date + auto-detect status
